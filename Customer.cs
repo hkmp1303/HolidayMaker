@@ -1,6 +1,7 @@
 using MySql.Data.MySqlClient;
 namespace server;
 
+/*
 class Customer
 {
     //public record customer(int id, string email, string password, string firstname, string lastname, string phonenumber, string address)
@@ -8,4 +9,4 @@ class Customer
 
     //customer insert quary 
     public record 
-}
+} */
