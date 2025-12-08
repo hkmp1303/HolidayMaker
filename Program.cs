@@ -23,17 +23,17 @@ async Task DbReset(Config config) //create tables, also hard reset
         bookingactivity,
         bookinghotel,
         booking,
-        customersupport,
         hotel,
         hotelamenity,
         amenity,
         transportation,
-        customer,
+        user,
         room,
         price,
         holidaymakerab,
         activity,
-        admin;
+        country,
+        bycountrysearch;
     SET FOREIGN_KEY_CHECKS =1;
     """; //string that hold the databse and fk
 
@@ -49,15 +49,16 @@ async Task DbReset(Config config) //create tables, also hard reset
             address VARCHAR(255) NOT NULL
         );
         
-        CREATE TABLE customer
+        CREATE TABLE user
         (
-            customerid INT PRIMARY KEY AUTO_INCREMENT,
+            userid INT PRIMARY KEY AUTO_INCREMENT,
             email VARCHAR(254) NOT NULL,
             password VARCHAR(255) NOT NULL,
             firstname VARCHAR(100) NOT NULL,
             lastname VARCHAR(100) NOT NULL,
             phonenumber VARCHAR(20) NOT NULL,
             address VARCHAR(255) NOT NULL,
+            role ENUM ('customer', 'admin') NOT NULL,
             fk_holidaymakerab_id INT,
             FOREIGN KEY(fk_holidaymakerab_id) REFERENCES holidaymakerab(holidaymakerabid)
         );
@@ -71,18 +72,9 @@ async Task DbReset(Config config) //create tables, also hard reset
             city VARCHAR(100) NOT NULL,
             phonenumber VARCHAR(20),
             email VARCHAR(254),
-            total_capacity INT NOT NULL
-        );
-
-        CREATE TABLE admin
-        (
-            adminid INT PRIMARY KEY AUTO_INCREMENT,
-            email VARCHAR(254) NOT NULL UNIQUE,
-            password VARCHAR(255) NOT NULL,
-            firstname VARCHAR(100) NOT NULL,
-            lastname VARCHAR(100) NOT NULL,
-            fk_holidaymakerab_id INT NOT NULL,
-            FOREIGN KEY(fk_holidaymakerab_id) REFERENCES holidaymakerab(holidaymakerabid)
+            total_capacity INT NOT NULL,
+            coordinates POINT NOT NULL SRID 4326,
+            SPATIAL INDEX(coordinates)
         );
 
         CREATE TABLE amenity
@@ -128,33 +120,21 @@ async Task DbReset(Config config) //create tables, also hard reset
             star_rating INT NOT NULL CHECK (star_rating BETWEEN 1 AND 5),
             description TEXT,
             date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            fk_customer_id INT NOT NULL,
+            fk_user_id INT NOT NULL,
             fk_hotel_id INT NOT NULL,
             fk_activity_id INT NOT NULL,
-            FOREIGN KEY (fk_customer_id) REFERENCES customer(customerid),
+            FOREIGN KEY (fk_user_id) REFERENCES user(userid),
             FOREIGN KEY (fk_hotel_id) REFERENCES hotel(hotelid),
             FOREIGN KEY (fk_activity_id) REFERENCES activity(activityid)
         );
-
-        CREATE TABLE customersupport (
-        customersupportid INT PRIMARY KEY AUTO_INCREMENT,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        firstname VARCHAR(100) NOT NULL,
-        lastname VARCHAR(100) NOT NULL,
-        phonenumber VARCHAR(20),
-        fk_holidaymakerab_id INT,
-        FOREIGN KEY(fk_holidaymakerab_id) REFERENCES holidaymakerab(holidaymakerabid)
-        );
-
 
         CREATE TABLE booking
         (
             bookingid INT PRIMARY KEY AUTO_INCREMENT,
             bookingdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            fk_customer_id INT NOT NULL,
+            fk_user_id INT NOT NULL,
             fk_transportation_id INT,
-            FOREIGN KEY (fk_customer_id) REFERENCES customer(customerid),
+            FOREIGN KEY (fk_user_id) REFERENCES user(userid),
             FOREIGN KEY (fk_transportation_id) REFERENCES transportation(transportationid)
         );
         
@@ -194,6 +174,25 @@ async Task DbReset(Config config) //create tables, also hard reset
             date_end DATE NOT NULL,
             FOREIGN KEY (fk_booking_id) REFERENCES booking(bookingid),
             FOREIGN KEY (fk_room_id) REFERENCES room(roomid)
+        );
+
+        CREATE TABLE country
+        (
+        countryid INT PRIMARY KEY AUTO_INCREMENT,
+        country VARCHAR(100)
+        );
+
+        CREATE TABLE bycountrysearch
+        (
+        bycountrysearchid INT PRIMARY KEY AUTO_INCREMENT,
+        fk_hotel_id INT,
+        fk_activity_id INT,
+        fk_transportation_id INT,
+        fk_country_id INT,
+        FOREIGN KEY (fk_hotel_id) REFERENCES hotel(hotelid),
+        FOREIGN KEY (fk_activity_id) REFERENCES activity(activityid),
+        FOREIGN KEY (fk_transportation_id) REFERENCES transportation(transportationid),
+        FOREIGN KEY (fk_country_id) REFERENCES country(countryid)
         );         
     """; //create tables with fk connections
 
