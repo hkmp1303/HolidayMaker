@@ -1,3 +1,3 @@
 namespace server;
 
-record Config(string ConnectionString);
+public record Config(string ConnectionString);
