@@ -1,23 +1,35 @@
 using MySql.Data.MySqlClient;
 using server;
 
-var builder = WebApplication.CreateBuilder(args);
 
 string db = "server=127.0.0.1;uid=holidaymaker;pwd=holidaymaker;database=holidaymaker"; //login and connection to database
 Config config = new(db);
-builder.Services.AddSingleton<Config>(config);
+
+var builder = WebApplication.CreateBuilder(args);
+// builder.Services.AddSingleton<Config>(config);
+builder.Services.AddSingleton(config);
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+    {
+        options.Cookie.IsEssential = true;
+        options.Cookie.HttpOnly = true;
+    });
+
+
 var app = builder.Build();
+app.UseSession();
 
-
+app.MapPost("/login", Login.Post);
 //Reset and create the database
 app.MapDelete("/db", DbReset);
 app.MapGet("/Hotel", HotelsQ.GetHotels); 
+
 
 app.Run();
 
 async Task DbReset(Config config) //create tables, also hard reset
 {
-    string dropSql =""" 
+    string dropSql ="""
     SET FOREIGN_KEY_CHECKS = 0;
     DROP TABLE IF EXISTS
         rating,
@@ -49,7 +61,7 @@ async Task DbReset(Config config) //create tables, also hard reset
             email VARCHAR(254) NOT NULL,
             address VARCHAR(255) NOT NULL
         );
-        
+
         CREATE TABLE user
         (
             userid INT PRIMARY KEY AUTO_INCREMENT,
@@ -102,7 +114,7 @@ async Task DbReset(Config config) //create tables, also hard reset
             SPATIAL INDEX(coordinates)
         );
 
-        CREATE TABLE activity 
+        CREATE TABLE activity
         (
             activityid INT PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(100) NOT NULL,
@@ -138,24 +150,24 @@ async Task DbReset(Config config) //create tables, also hard reset
             FOREIGN KEY (fk_user_id) REFERENCES user(userid),
             FOREIGN KEY (fk_transportation_id) REFERENCES transportation(transportationid)
         );
-        
+
         CREATE TABLE price (
             priceid int PRIMARY key AUTO_INCREMENT,
             price decimal(10, 2) NOT NULL,
             priceType enum('Room', 'Activity', 'Transportation') NOT NULL
         );
-        
+
         CREATE TABLE room (
             roomid int PRIMARY KEY AUTO_INCREMENT,
             fk_hotel_id int NOT NULL,
             fk_price_id int NOT NULL,
             roomtype enum('Vacant', 'Reserved', 'Occupied', 'Unavailable') NOT NULL,
             status enum('Double twin', 'Double bed', 'Family', 'Suite') NOT NULL,
-            FOREIGN KEY (fk_hotel_id) REFERENCES hotel(hotelid), 
+            FOREIGN KEY (fk_hotel_id) REFERENCES hotel(hotelid),
             FOREIGN KEY (fk_price_id) REFERENCES price(priceid)
             );
 
-        
+
         CREATE TABLE bookingactivity (
             bookingactivityid INT PRIMARY KEY AUTO_INCREMENT,
             fk_booking_id INT NOT NULL,
@@ -165,7 +177,7 @@ async Task DbReset(Config config) //create tables, also hard reset
             FOREIGN KEY (fk_booking_id) REFERENCES booking(bookingid),
             FOREIGN KEY (fk_activity_id) REFERENCES activity(activityid)
         );
-        
+
         CREATE TABLE bookinghotel
         (
             bookinghotelid INT PRIMARY KEY AUTO_INCREMENT,
@@ -194,7 +206,7 @@ async Task DbReset(Config config) //create tables, also hard reset
         FOREIGN KEY (fk_activity_id) REFERENCES activity(activityid),
         FOREIGN KEY (fk_transportation_id) REFERENCES transportation(transportationid),
         FOREIGN KEY (fk_country_id) REFERENCES country(countryid)
-        );         
+        );
     """; //create tables with fk connections
 
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, holidaymakerdb); //creating the database
