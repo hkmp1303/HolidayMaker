@@ -1,7 +1,6 @@
 namespace server;
 
 using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI.Common;
 
 static class Login
 {
@@ -10,7 +9,7 @@ static class Login
     Post(Post_args credentials, Config config, HttpContext ctx)
     {
         bool result = false;
-        string query = "SELECT id FROM user WHERE email = @email and password = @password";
+        string query = "SELECT userid FROM user WHERE email = @email and password = @password";
         var parameters = new MySqlParameter[]
         {
             new("@email", credentials.Email),
