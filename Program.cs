@@ -161,8 +161,8 @@ async Task DbReset(Config config) //create tables, also hard reset
             roomid int PRIMARY KEY AUTO_INCREMENT,
             fk_hotel_id int NOT NULL,
             fk_price_id int NOT NULL,
-            roomtype enum('Vacant', 'Reserved', 'Occupied', 'Unavailable') NOT NULL,
-            status enum('Double twin', 'Double bed', 'Family', 'Suite') NOT NULL,
+            roomtype enum('Double twin', 'Double bed', 'Family', 'Suite') NOT NULL,
+            status enum('Vacant', 'Reserved', 'Occupied', 'Unavailable') NOT NULL,
             FOREIGN KEY (fk_hotel_id) REFERENCES hotel(hotelid),
             FOREIGN KEY (fk_price_id) REFERENCES price(priceid)
             );
