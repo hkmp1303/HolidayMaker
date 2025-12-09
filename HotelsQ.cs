@@ -53,4 +53,31 @@ public class HotelsQ
         }
         return hotels;
     }
+    
+public record PricedHotel(int Id, string Name, decimal Price);
+
+public static async Task<List<PricedHotel>> SortHotelPrice(Config config)
+{
+    var hotels = new List<PricedHotel>();
+
+    var sql = @"
+            SELECT h.hotelid, h.name, MIN(p.price) AS price
+            FROM hotel h
+            JOIN room r ON h.hotelid = r.fk_hotel_id
+            JOIN price p ON r.fk_price_id = p.priceid
+            WHERE p.priceType = 'Room'
+            GROUP BY h.hotelid, h.name
+        ORDER BY price ASC";
+
+    using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql);
+    while (await reader.ReadAsync())
+    {
+        hotels.Add(new PricedHotel(
+            reader.GetInt32("hotelid"),
+            reader.GetString("name"),
+            reader.GetDecimal("price")
+        ));
+    }
+    return hotels;
+}
 }
