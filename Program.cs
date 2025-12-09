@@ -15,7 +15,6 @@ builder.Services.AddSession(options =>
         options.Cookie.HttpOnly = true;
     });
 
-
 var app = builder.Build();
 app.UseSession();
 
@@ -26,7 +25,7 @@ app.MapPost("/createuser", CreateUser.Post);
 //Reset and create the database
 app.MapDelete("/db", DbReset);
 app.MapGet("/Hotel", HotelsQ.GetHotels); 
-
+app.MapGet("/HotelPrice", HotelsQ.SortHotelPrice);
 
 app.Run();
 
