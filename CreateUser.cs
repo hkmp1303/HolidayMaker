@@ -5,7 +5,6 @@ using MySql.Data.MySqlClient;
 
 static class CreateUser
 {
-    
     public record PostArgs(String Email, String Password, String Firstname, String Lastname, String Phonenumber, string Address, Enum Role);
     public static async Task 
     Post(PostArgs credentials, Config config)
@@ -23,9 +22,6 @@ static class CreateUser
             new("@phonenumber", credentials.Phonenumber),
             new("@address", credentials.Address)
         };
-
         await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters);
     } 
-    
 }
-
