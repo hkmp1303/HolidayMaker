@@ -20,6 +20,9 @@ var app = builder.Build();
 app.UseSession();
 
 app.MapPost("/login", Login.Post);
+//create user 
+app.MapPost("/createuser", CreateUser.Post);
+
 //Reset and create the database
 app.MapDelete("/db", DbReset);
 app.MapGet("/Hotel", HotelsQ.GetHotels); 
