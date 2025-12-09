@@ -1,14 +1,18 @@
 using System.Reflection.Metadata;
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Cms;
 
 namespace server;
 
-static class Booking
+static class BookingRequest
 {
-    public record bookingactivity(int bookingid, int fkbookingactivityid, DateTime start, DateTime end);
-    public record Post_Args(int transportationid, int roomid, DateTime start, DateTime end);
-    public static async Task 
-    CreateBooking(Post_Args credentials, Config config, HttpContext ctx)
+    public record Bookingactivity(int fk_bookingid, int fk_bookingactivityid, DateTime start, DateTime end);
+    public record Bookinghotel(int fk_bookingid, int fk_roomid, DateTime start, DateTime end);
+    public record Bookingroom(int fk_hotelid, int fk_priceid, Enum roomtype, Enum status);
+
+    public record Booking (int transportationid, List<Bookingactivity> activityList, List<Bookinghotel> hotellist, List<Bookingroom> roomlist);
+
+    public static async Task CreateBooking(Booking credentials, Config config, HttpContext ctx)
     {
         if(ctx.Session.IsAvailable)
         {
@@ -16,16 +20,23 @@ static class Booking
             {
                 string bookingquery = """
                 INSERT INTO booking(fk_user_id, fk_transportation_id, bookingdate)
-                VALUES(@userid, @transportationid, NOW())
+                VALUES(@userid, @transportationid, NOW());
+                SELECT LAST_INSERT_ID();
                 """;
 
-                var parameters = new MySqlParameter[]
-                {
-                  new("@userid", user_id),
-                  new("@transportationid", credentials.transportationid)
+                int booking_id;
+
+                var cmd = new MySqlCommand();
+
+                booking_id = Convert.ToInt32(cmd.LastInsertedId);
+
+                // var parameters = new MySqlParameter[]
+                // {
+                //   new("@userid", user_id),
+                //   new("@transportationid", credentials.transportationid)
                   
-                };
-                await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, bookingquery, parameters);
+                // };
+                // await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, bookingquery, parameters);
             }
         }
         
