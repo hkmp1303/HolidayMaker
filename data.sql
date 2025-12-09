@@ -184,14 +184,14 @@ INSERT INTO price (price, priceType) VALUES
 -- 11. ROOM
 -- =========================================================
 INSERT INTO room (fk_hotel_id, fk_price_id, roomtype, status) VALUES
-(1, 1, 'Vacant',     'Double twin'),
-(1, 2, 'Reserved',   'Suite'),
-(2, 2, 'Vacant',     'Double bed'),
-(2, 3, 'Occupied',   'Family'),
-(3, 1, 'Vacant',     'Double bed'),
-(4, 3, 'Unavailable','Suite'),
-(5, 4, 'Vacant',     'Double bed'),
-(6, 4, 'Reserved',   'Family');
+(1, 1, 'Double twin',     'Vacant'),
+(1, 2, 'Suite',   'Reserved'),
+(2, 2, 'Double bed',     'Vacant'),
+(2, 3, 'Family',   'Occupied'),
+(3, 1, 'Double bed',     'Vacant'),
+(4, 3, 'Suite','Unavailable'),
+(5, 4, 'Double bed',     'Vacant'),
+(6, 4, 'Family',   'Reserved');
 
 -- =========================================================
 -- 12. BOOKINGACTIVITY

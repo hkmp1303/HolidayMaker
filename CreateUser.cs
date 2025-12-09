@@ -27,21 +27,5 @@ static class CreateUser
         await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters);
     } 
     
-
 }
 
-/*
-userid INT PRIMARY KEY AUTO_INCREMENT,
-            
-            email VARCHAR(254) NOT NULL,
-            password VARCHAR(255) NOT NULL,
-            firstname VARCHAR(100) NOT NULL,
-            lastname VARCHAR(100) NOT NULL,
-            phonenumber VARCHAR(20) NOT NULL,
-            address VARCHAR(255) NOT NULL,
-            role ENUM ('customer', 'admin') NOT NULL,
-            
-            
-            fk_holidaymakerab_id INT,
-            FOREIGN KEY(fk_holidaymakerab_id) REFERENCES holidaymakerab(holidaymakerabid)
-*/
