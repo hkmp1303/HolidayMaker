@@ -27,12 +27,12 @@ public class HotelsQ
         return hotels;
     }
     public record Hotelfull(int Id, string Name,  string Description, string Address,
-        string City, string Phonenumber, string Email, int Totalcapacity);
+        string City, string Phonenumber, string Email, int Totalcapacity, double Latitude,  double Longitude);
     public static async Task<List<Hotelfull>> GetHotelsfull(Config config)
     {
         var hotels = new List<Hotelfull>();
         
-        var sql = "SELECT hotelid, name, description, address, city, phonenumber, email, total_capacity FROM hotel"; 
+        var sql = "SELECT hotelid, name, description, address, city, phonenumber, email, total_capacity, ST_X(coordinates) AS x, ST_Y(coordinates) AS y FROM hotel"; 
 
         using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql);
 
@@ -46,7 +46,9 @@ public class HotelsQ
                 reader.GetString("city"),
                 reader.GetString("phonenumber"),
                 reader.GetString("email"),
-               reader.GetInt32("total_capacity")
+               reader.GetInt32("total_capacity"),
+                reader.GetDouble("y"),
+                reader.GetDouble("x")
             ));
         }
         return hotels;
