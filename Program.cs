@@ -23,7 +23,7 @@ app.MapPost("/login", Login.Post);
 //Reset and create the database
 app.MapDelete("/db", DbReset);
 app.MapGet("/Hotel", HotelsQ.GetHotels); 
-
+app.MapGet("/fhotel", HotelsQ.GetHotelsfull);
 
 app.Run();
 
