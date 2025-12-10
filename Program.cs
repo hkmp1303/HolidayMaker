@@ -6,7 +6,6 @@ string db = "server=127.0.0.1;uid=holidaymaker;pwd=holidaymaker;database=holiday
 Config config = new(db);
 
 var builder = WebApplication.CreateBuilder(args);
-// builder.Services.AddSingleton<Config>(config);
 builder.Services.AddSingleton(config);
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -17,14 +16,20 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 app.UseSession();
-
+app.MapGet("/", () => "Server is running");
+// Get user data
+app.MapGet("/profile", Profile.Get_UserData);
+// Update user data by user
+app.MapPatch("/profile", Profile.Patch_UserData);
+// Login
 app.MapPost("/login", Login.Post);
 //create user
 app.MapPost("/createuser", CreateUser.Post);
 
 //Reset and create the database
 app.MapDelete("/db", DbReset);
-app.MapGet("/Hotel", HotelsQ.GetHotels);
+app.MapGet("/Hotel", HotelsQ.GetHotels); 
+app.MapGet("/fhotel", HotelsQ.GetHotelsfull);
 app.MapGet("/HotelPrice", HotelsQ.SortHotelPrice);
 
 app.Run();
