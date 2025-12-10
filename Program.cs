@@ -27,6 +27,7 @@ app.MapDelete("/db", DbReset);
 app.MapGet("/Hotel", HotelsQ.GetHotels); 
 app.MapGet("/fhotel", HotelsQ.GetHotelsfull);
 app.MapGet("/HotelPrice", HotelsQ.SortHotelPrice);
+app.MapGet("/activities/{country}", ActivitiesQ.GetActivitiesByCountry);
 
 app.Run();
 
