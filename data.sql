@@ -1,7 +1,7 @@
 -- =========================================================
 -- 1. HOLIDAYMAKERAB
 -- =========================================================
-INSERT INTO holidaymakerab (name, phonenumber, email, address) VALUES
+INSERT IGNORE INTO holidaymakerab (name, phonenumber, email, address) VALUES
 ('HolidayMaker AB Göteborg',  '+46-31-100100', 'info.gbg@holidaymaker.se',   'Kungsportsavenyn 1, 411 36 Göteborg'),
 ('HolidayMaker AB Stockholm', '+46-8-200200',  'info.sto@holidaymaker.se',   'Drottninggatan 10, 111 51 Stockholm'),
 ('HolidayMaker AB Malmö',     '+46-40-300300', 'info.malmo@holidaymaker.se', 'Södra Förstadsgatan 15, 211 43 Malmö');
@@ -9,7 +9,7 @@ INSERT INTO holidaymakerab (name, phonenumber, email, address) VALUES
 -- =========================================================
 -- 2. USER  (OBS: tabellnamn "user")
 -- =========================================================
-INSERT INTO user (email, password, firstname, lastname, phonenumber, address, role, fk_holidaymakerab_id) VALUES
+INSERT IGNORE INTO user (email, password, firstname, lastname, phonenumber, address, role, fk_holidaymakerab_id) VALUES
 ('anna.kund@example.com',   'hashed_pw_1', 'Anna',   'Svensson',  '+46-70-1111111', 'Storgatan 1, 411 00 Göteborg',  'customer', 1),
 ('erik.kund@example.com',   'hashed_pw_2', 'Erik',   'Johansson', '+46-70-2222222', 'Sveavägen 12, 111 57 Stockholm','customer', 2),
 ('maria.kund@example.com',  'hashed_pw_3', 'Maria',  'Nilsson',   '+46-70-3333333', 'Föreningsgatan 20, 214 26 Malmö','customer',3),
@@ -20,7 +20,7 @@ INSERT INTO user (email, password, firstname, lastname, phonenumber, address, ro
 -- =========================================================
 -- 3. HOTEL  (POINT(lat lon), SRID 4326)
 -- =========================================================
-INSERT INTO hotel (name, description, address, city, phonenumber, total_capacity, coordinates) VALUES 
+INSERT IGNORE INTO hotel (name, description, address, city, phonenumber, total_capacity, coordinates) VALUES
 -- USA
 ('The Plaza New York', 'Ikoniskt lyxhotell vid Central Park.', '768 5th Ave', 'New York', '+1-212-759-3000', 282, ST_GeomFromText('POINT(40.7645 -73.9744)', 4326)),
 ('Beverly Hills Hotel', 'Kändistätt hotell i Los Angeles.', '9641 Sunset Blvd', 'Los Angeles', '+1-310-276-2251', 210, ST_GeomFromText('POINT(34.0816 -118.4137)', 4326)),
@@ -68,7 +68,7 @@ INSERT INTO hotel (name, description, address, city, phonenumber, total_capacity
 -- =========================================================
 -- 4. AMENITY
 -- =========================================================
-INSERT INTO amenity (name) VALUES
+INSERT IGNORE INTO amenity (name) VALUES
 ('Free WiFi'),
 ('Breakfast included'),
 ('Swimming pool'),
@@ -82,41 +82,41 @@ INSERT INTO amenity (name) VALUES
 -- 5. HOTELAMENITY
 -- =========================================================
 -- Gothia Towers (hotelid = 1)
-INSERT INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
+INSERT IGNORE INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
 (1,1),(1,2),(1,3),(1,4),(1,7);
 
 -- Grand Hôtel (hotelid = 2)
-INSERT INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
+INSERT IGNORE INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
 (2,1),(2,2),(2,3),(2,4),(2,5),(2,8);
 
 -- Radisson Blu Malmö (hotelid = 3)
-INSERT INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
+INSERT IGNORE INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
 (3,1),(3,2),(3,4),(3,7);
 
 -- Clarion Sign (hotelid = 4)
-INSERT INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
+INSERT IGNORE INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
 (4,1),(4,2),(4,4),(4,7),(4,8);
 
 -- Barcelona Beach (hotelid = 5)
-INSERT INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
+INSERT IGNORE INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
 (5,1),(5,2),(5,3),(5,6),(5,8);
 
 -- Roma Centro (hotelid = 6)
-INSERT INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
+INSERT IGNORE INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
 (6,1),(6,2),(6,5),(6,7);
 
 -- Oslo Fjord Hotel (7)
-INSERT INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
+INSERT IGNORE INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
 (7,1),(7,2),(7,4),(7,7),(7,8);
 
 -- Copenhagen City Hotel (8)
-INSERT INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
+INSERT IGNORE INTO hotelamenity (fk_hotel_id, fk_amenity_id) VALUES
 (8,1),(8,2),(8,4),(8,7);
 
 -- =========================================================
 -- 6. TRANSPORTATION  (POINT(lat lon))
 -- =========================================================
-INSERT INTO transportation (name, phonenumber, departure, arrival, coordinates) VALUES
+INSERT IGNORE INTO transportation (name, phonenumber, departure, arrival, coordinates) VALUES
 ('Flyg Göteborg–Barcelona', '+46-770-123456', '2026-06-10 08:00:00', '2026-06-10 11:00:00',
  ST_GeomFromText('POINT(57.6660 12.2948)', 4326)),  -- Landvetter
 ('Tåg Stockholm–Malmö',     '+46-771-757575', '2026-07-01 09:30:00', '2026-07-01 13:45:00',
@@ -131,7 +131,7 @@ INSERT INTO transportation (name, phonenumber, departure, arrival, coordinates) 
 -- =========================================================
 -- 7. ACTIVITY  (POINT(lat lon))
 -- =========================================================
-INSERT INTO activity (name, phonenumber, address, city, price, description, coordinates) VALUES
+INSERT IGNORE INTO activity (name, phonenumber, address, city, price, description, coordinates) VALUES
 ('Lisebergsbesök', '+46-31-400100', 'Örgrytevägen 5', 'Göteborg', 595.00,
  'Heldagsentré till Liseberg nöjespark.', ST_GeomFromText('POINT(57.6959 11.9936)', 4326)),
 ('Skärgårdskryssning', '+46-31-987654', 'Packhuskajen 10', 'Göteborg', 450.00,
@@ -148,7 +148,7 @@ INSERT INTO activity (name, phonenumber, address, city, price, description, coor
 -- =========================================================
 -- 8. RATING
 -- =========================================================
-INSERT INTO rating (star_rating, description, fk_user_id, fk_hotel_id, fk_activity_id) VALUES
+INSERT IGNORE INTO rating (star_rating, description, fk_user_id, fk_hotel_id, fk_activity_id) VALUES
 (5, 'Fantastisk utsikt och bra service.',      1, 1, 1),
 (4, 'Mycket trevligt hotell, bra frukost.',    2, 2, 3),
 (3, 'Bra läge men lite små rum.',              3, 3, 2),
@@ -159,7 +159,7 @@ INSERT INTO rating (star_rating, description, fk_user_id, fk_hotel_id, fk_activi
 -- =========================================================
 -- 9. BOOKING
 -- =========================================================
-INSERT INTO booking (bookingdate, fk_user_id, fk_transportation_id) VALUES
+INSERT IGNORE INTO booking (bookingdate, fk_user_id, fk_transportation_id) VALUES
 ('2026-06-01 10:15:00', 1, 1),  -- Anna, flyg Gbg–Barcelona
 ('2026-07-10 14:30:00', 2, 2),  -- Erik, tåg Sthlm–Malmö
 ('2026-08-01 09:00:00', 3, 4),  -- Maria, färja Gbg–Kiel
@@ -170,7 +170,7 @@ INSERT INTO booking (bookingdate, fk_user_id, fk_transportation_id) VALUES
 -- =========================================================
 -- 10. PRICE
 -- =========================================================
-INSERT INTO price (price, priceType) VALUES
+INSERT IGNORE INTO price (price, priceType) VALUES
 (895.00,  'Room'),           -- id 1
 (1295.00, 'Room'),           -- id 2
 (1595.00, 'Room'),           -- id 3
@@ -183,7 +183,7 @@ INSERT INTO price (price, priceType) VALUES
 -- =========================================================
 -- 11. ROOM
 -- =========================================================
-INSERT INTO room (fk_hotel_id, fk_price_id, roomtype, status) VALUES
+INSERT IGNORE INTO room (fk_hotel_id, fk_price_id, roomtype, status) VALUES
 (1, 1, 'Double twin',     'Vacant'),
 (1, 2, 'Suite',   'Reserved'),
 (2, 2, 'Double bed',     'Vacant'),
@@ -196,7 +196,7 @@ INSERT INTO room (fk_hotel_id, fk_price_id, roomtype, status) VALUES
 -- =========================================================
 -- 12. BOOKINGACTIVITY
 -- =========================================================
-INSERT INTO bookingactivity (fk_booking_id, fk_activity_id, DateStart, DateEnd) VALUES
+INSERT IGNORE INTO bookingactivity (fk_booking_id, fk_activity_id, DateStart, DateEnd) VALUES
 (1, 4, '2026-06-11', '2026-06-11'), -- Gaudí tour
 (2, 1, '2026-07-16', '2026-07-16'), -- Liseberg
 (3, 2, '2026-08-02', '2026-08-02'), -- Skärgårdskryssning
@@ -207,7 +207,7 @@ INSERT INTO bookingactivity (fk_booking_id, fk_activity_id, DateStart, DateEnd) 
 -- =========================================================
 -- 13. BOOKINGHOTEL
 -- =========================================================
-INSERT INTO bookinghotel (fk_booking_id, fk_room_id, date_start, date_end) VALUES
+INSERT IGNORE INTO bookinghotel (fk_booking_id, fk_room_id, date_start, date_end) VALUES
 (1, 7, '2026-06-10', '2026-06-15'), -- Barcelona Beach
 (2, 3, '2026-07-15', '2026-07-18'), -- Grand Hôtel
 (3, 5, '2026-08-15', '2026-08-18'), -- Radisson Malmö
@@ -218,7 +218,7 @@ INSERT INTO bookinghotel (fk_booking_id, fk_room_id, date_start, date_end) VALUE
 -- =========================================================
 -- 14. COUNTRY
 -- =========================================================
-INSERT INTO country (country) VALUES
+INSERT IGNORE INTO country (country) VALUES
 ('Sweden'),   -- 1
 ('Norway'),   -- 2
 ('Denmark'),  -- 3
@@ -229,7 +229,7 @@ INSERT INTO country (country) VALUES
 -- =========================================================
 -- 15. BYCOUNTRYSEARCH
 -- =========================================================
-INSERT INTO bycountrysearch (fk_hotel_id, fk_activity_id, fk_transportation_id, fk_country_id) VALUES
+INSERT IGNORE INTO bycountrysearch (fk_hotel_id, fk_activity_id, fk_transportation_id, fk_country_id) VALUES
 (1, 1, 4, 1),  -- Gothia + Liseberg + färja Gbg–Kiel (Sweden)
 (2, 3, 2, 1),  -- Grand + Gamla Stan + tåg Sthlm–Malmö (Sweden)
 (3, 2, NULL, 1), -- Radisson Malmö + skärgård (svensk produkt)
