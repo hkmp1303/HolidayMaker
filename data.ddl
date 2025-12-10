@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE IF NOT EXISTS holidaymakerab (
     holidaymakerabid INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
@@ -68,10 +69,9 @@ CREATE TABLE IF NOT EXISTS activity (
     phonenumber VARCHAR(20) NOT NULL,
     `address` VARCHAR(255) NOT NULL,
     city VARCHAR(100) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
+    fk_price_id int NOT NULL,
     `description` TEXT,
     coordinates POINT NOT NULL SRID 4326,
-    fk_price_id int NOT NULL,
     SPATIAL INDEX(coordinates),
     FOREIGN KEY (fk_price_id) REFERENCES price(priceid)
 );
@@ -144,3 +144,4 @@ CREATE TABLE IF NOT EXISTS bycountrysearch (
     FOREIGN KEY (fk_transportation_id) REFERENCES transportation(transportationid),
     FOREIGN KEY (fk_country_id) REFERENCES country(countryid)
 );
+SET FOREIGN_KEY_CHECKS = 1;
