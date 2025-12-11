@@ -32,7 +32,8 @@ app.MapPost("/booking", BookingRequest.CreateBooking);
 app.MapDelete("/db", DbReset);
 app.MapGet("/Hotel", HotelsQ.GetHotels); 
 app.MapGet("/fhotel", HotelsQ.GetHotelsfull);
-app.MapGet("/HotelPrice", HotelsQ.SortHotelPrice);
+app.MapGet("/HotelPrice", HotelsQ.GetHotelPrice);
+app.MapGet("/HotelAmenity", HotelsQ.GetHotelAmenities);
 app.MapGet("/activities/{country}", ActivitiesQ.GetActivitiesByCountry);
 
 app.Run();
