@@ -31,7 +31,7 @@ app.MapPost("/booking", BookingRequest.CreateBooking);
 //Reset and create the database
 app.MapDelete("/db", DbReset);
 app.MapGet("/Hotel", HotelsQ.GetHotels); 
-app.MapGet("/fhotel", HotelsQ.GetHotelsfull);
+app.MapGet("/fhotel", HotelsQ.GetHotelsAdmin);
 app.MapGet("/HotelPrice", HotelsQ.GetHotelPrice);
 app.MapGet("/HotelAmenity", HotelsQ.GetHotelAmenities);
 app.MapGet("/activities/{country}", ActivitiesQ.GetActivitiesByCountry);
