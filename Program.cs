@@ -25,6 +25,8 @@ app.MapPatch("/profile", Profile.Patch_UserData);
 app.MapPost("/login", Login.Post);
 //create user
 app.MapPost("/createuser", CreateUser.Post);
+//booking
+app.MapPost("/booking", BookingRequest.CreateBooking);
 
 //Reset and create the database
 app.MapDelete("/db", DbReset);
