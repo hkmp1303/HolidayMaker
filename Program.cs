@@ -28,8 +28,9 @@ app.MapPost("/createuser", CreateUser.Post);
 
 //Reset and create the database
 app.MapDelete("/db", DbReset);
-app.MapGet("/Hotel", HotelsQ.GetHotels); 
-app.MapGet("/fhotel", HotelsQ.GetHotelsfull);
+app.MapGet("/Hotels", HotelsQ.GetHotels); 
+app.MapGet("/fhotel", HotelsQ.GetHotelsAdmin);
+app.MapGet("/hotel", HotelsQ.GetHotelsfull);
 app.MapGet("/HotelPrice", HotelsQ.SortHotelPrice);
 app.MapGet("/activities/{country}", ActivitiesQ.GetActivitiesByCountry);
 
