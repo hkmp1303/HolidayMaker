@@ -54,9 +54,10 @@ public class HotelsQ
         return hotels;
     }
     
-    public record PricedHotel(int Id, string Name, decimal Price);
+public record PricedHotel(int Id, string Name, decimal Price);
 
-    public static async Task<List<PricedHotel>> SortHotelPrice(Config config)
+    public static async Task<List<PricedHotel>> GetHotelPrice(Config config)
+
     {
         var hotels = new List<PricedHotel>();
 
@@ -118,5 +119,40 @@ public class HotelsQ
             ));
         }
         return hotels;
+    }
+
+
+    public record HotelAmenity(int HotelId, string HotelName, string Description, string Address, string City, string Amenity);
+
+    public static async Task<List<HotelAmenity>> GetHotelAmenities(Config config)
+{
+    var hotels = new List<HotelAmenity>();
+
+    var sql = @"
+            SELECT h.hotelid,
+            h.name AS hotel_name,
+            h.description,
+            h.address,
+            h.city,
+            GROUP_CONCAT(a.name ORDER BY a.name SEPARATOR ', ') AS amenities
+        FROM hotel h
+        JOIN hotelamenity ha ON h.hotelid = ha.fk_hotel_id
+        JOIN amenity a ON ha.fk_amenity_id = a.amenityid
+        GROUP BY h.hotelid, h.name, h.description, h.address, h.city
+        ORDER BY h.name";
+
+    using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql);
+    while (await reader.ReadAsync())
+    {
+        hotels.Add(new HotelAmenity(
+            reader.GetInt32("hotelid"),
+            reader.GetString("hotel_name"),
+            reader.GetString("description"),
+            reader.GetString("address"),
+            reader.GetString("city"),
+            reader.GetString("amenities")
+        ));
+    }
+    return hotels;
     }
 }
