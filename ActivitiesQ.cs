@@ -104,4 +104,54 @@ public class ActivitiesQ
 
     return activities;
   }
+
+  // Hämtar info om en specifik aktivitet baserad på aktivitetens ID
+  public static async Task<ActivityFull?> GetActivityById(int id, Config config)
+  {
+    string sql = @"
+        SELECT 
+            activityid,
+            name,
+            phonenumber,
+            address,
+            city,
+            price,
+            description,
+            ST_X(coordinates) AS x,
+            ST_Y(coordinates) AS y
+        FROM activity
+        WHERE activityid = @id
+        LIMIT 1;
+    ";
+
+    // Parameter för att undvika SQL injection
+    var param = new MySqlParameter("@id", id);
+
+    // Kör frågan mot databasen
+    using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql, param);
+
+    // När vi hittar en rad, bygger vi upp ett ActivityFull-objekt
+    if (await reader.ReadAsync())
+    {
+      return new ActivityFull(
+          reader.GetInt32("activityid"),
+          reader.GetString("name"),
+          reader.GetString("phonenumber"),
+          reader.GetString("address"),
+          reader.GetString("city"),
+          reader.GetDecimal("price"),
+          reader.IsDBNull(reader.GetOrdinal("description"))
+              ? null
+              : reader.GetString("description"),
+          reader.GetDouble("y"), 
+          reader.GetDouble("x")
+      );
+    }
+
+    // Om ingen aktivitet hittades
+    return null;
+  }
+
 }
+
+
