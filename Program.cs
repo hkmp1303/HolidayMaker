@@ -58,7 +58,9 @@ async Task DbReset(Config config) //create tables, also hard reset
         holidaymakerab,
         activity,
         country,
-        bycountrysearch;
+        bycountrysearch,
+        travelpackage,
+        packagedetails;
     SET FOREIGN_KEY_CHECKS =1;
     """; //string that hold the databse and fk
 
