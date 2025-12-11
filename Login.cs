@@ -1,7 +1,6 @@
 namespace server;
 
 using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI.Common;
 
 static class Login
 {

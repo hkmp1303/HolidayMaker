@@ -6,7 +6,6 @@ string db = "server=127.0.0.1;uid=holidaymaker;pwd=holidaymaker;database=holiday
 Config config = new(db);
 
 var builder = WebApplication.CreateBuilder(args);
-// builder.Services.AddSingleton<Config>(config);
 builder.Services.AddSingleton(config);
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -17,9 +16,14 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 app.UseSession();
-
+app.MapGet("/", () => "Server is running");
+// Get user data
+app.MapGet("/profile", Profile.Get_UserData);
+// Update user data by user
+app.MapPatch("/profile", Profile.Patch_UserData);
+// Login
 app.MapPost("/login", Login.Post);
-//create user 
+//create user
 app.MapPost("/createuser", CreateUser.Post);
 //booking
 app.MapPost("/booking", BookingRequest.CreateBooking);
@@ -29,6 +33,7 @@ app.MapDelete("/db", DbReset);
 app.MapGet("/Hotel", HotelsQ.GetHotels); 
 app.MapGet("/fhotel", HotelsQ.GetHotelsfull);
 app.MapGet("/HotelPrice", HotelsQ.SortHotelPrice);
+app.MapGet("/activities/{country}", ActivitiesQ.GetActivitiesByCountry);
 
 app.Run();
 
@@ -57,162 +62,7 @@ async Task DbReset(Config config) //create tables, also hard reset
 
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, dropSql); //connection
 
-    string holidaymakerdb = """
-        CREATE TABLE holidaymakerab
-        (
-            holidaymakerabid INT PRIMARY KEY AUTO_INCREMENT,
-            name VARCHAR(255) NOT NULL,
-            phonenumber VARCHAR(20) NOT NULL,
-            email VARCHAR(254) NOT NULL,
-            address VARCHAR(255) NOT NULL
-        );
-
-        CREATE TABLE user
-        (
-            userid INT PRIMARY KEY AUTO_INCREMENT,
-            email VARCHAR(254) NOT NULL,
-            password VARCHAR(255) NOT NULL,
-            firstname VARCHAR(100) NOT NULL,
-            lastname VARCHAR(100) NOT NULL,
-            phonenumber VARCHAR(20) NOT NULL,
-            address VARCHAR(255) NOT NULL,
-            role ENUM ('customer', 'admin') NOT NULL,
-            fk_holidaymakerab_id INT,
-            FOREIGN KEY(fk_holidaymakerab_id) REFERENCES holidaymakerab(holidaymakerabid)
-        );
-
-        CREATE TABLE hotel
-        (
-            hotelid INT PRIMARY KEY AUTO_INCREMENT,
-            name VARCHAR(255) NOT NULL,
-            description TEXT,
-            address VARCHAR(255) NOT NULL,
-            city VARCHAR(100) NOT NULL,
-            phonenumber VARCHAR(20),
-            email VARCHAR(254),
-            total_capacity INT NOT NULL,
-            coordinates POINT NOT NULL SRID 4326,
-            SPATIAL INDEX(coordinates)
-        );
-
-        CREATE TABLE amenity
-        (
-            amenityid INT PRIMARY KEY AUTO_INCREMENT,
-            name VARCHAR(100) NOT NULL
-        );
-
-        CREATE TABLE hotelamenity
-        (
-            fk_hotel_id INT NOT NULL,
-            fk_amenity_id INT NOT NULL,
-            FOREIGN KEY (fk_amenity_id) REFERENCES amenity(amenityid),
-            FOREIGN KEY(fk_hotel_id) REFERENCES hotel(hotelid)
-        );
-
-        CREATE TABLE transportation (
-            transportationid INT PRIMARY KEY AUTO_INCREMENT,
-            name VARCHAR(100) NOT NULL,
-            phonenumber VARCHAR(20) NOT NULL,
-            departure DATETIME,
-            arrival DATETIME,
-            coordinates POINT NOT NULL SRID 4326,
-            SPATIAL INDEX(coordinates)
-        );
-
-        CREATE TABLE activity
-        (
-            activityid INT PRIMARY KEY AUTO_INCREMENT,
-            name VARCHAR(100) NOT NULL,
-            phonenumber VARCHAR(20) NOT NULL,
-            address VARCHAR(255) NOT NULL,
-            city VARCHAR(100) NOT NULL,
-            price DECIMAL(10,2) NOT NULL,
-            description TEXT,
-            coordinates POINT NOT NULL SRID 4326,
-            SPATIAL INDEX(coordinates)
-        );
-
-        CREATE TABLE rating
-        (
-            ratingid INT PRIMARY KEY AUTO_INCREMENT,
-            star_rating INT NOT NULL CHECK (star_rating BETWEEN 1 AND 5),
-            description TEXT,
-            date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            fk_user_id INT NOT NULL,
-            fk_hotel_id INT NOT NULL,
-            fk_activity_id INT NOT NULL,
-            FOREIGN KEY (fk_user_id) REFERENCES user(userid),
-            FOREIGN KEY (fk_hotel_id) REFERENCES hotel(hotelid),
-            FOREIGN KEY (fk_activity_id) REFERENCES activity(activityid)
-        );
-
-        CREATE TABLE booking
-        (
-            bookingid INT PRIMARY KEY AUTO_INCREMENT,
-            bookingdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            fk_user_id INT NOT NULL,
-            fk_transportation_id INT,
-            FOREIGN KEY (fk_user_id) REFERENCES user(userid),
-            FOREIGN KEY (fk_transportation_id) REFERENCES transportation(transportationid)
-        );
-
-        CREATE TABLE price (
-            priceid int PRIMARY key AUTO_INCREMENT,
-            price decimal(10, 2) NOT NULL,
-            priceType enum('Room', 'Activity', 'Transportation') NOT NULL
-        );
-
-        CREATE TABLE room (
-            roomid int PRIMARY KEY AUTO_INCREMENT,
-            fk_hotel_id int NOT NULL,
-            fk_price_id int NOT NULL,
-            roomtype enum('Double twin', 'Double bed', 'Family', 'Suite') NOT NULL,
-            status enum('Vacant', 'Reserved', 'Occupied', 'Unavailable') NOT NULL,
-            FOREIGN KEY (fk_hotel_id) REFERENCES hotel(hotelid),
-            FOREIGN KEY (fk_price_id) REFERENCES price(priceid)
-            );
-
-
-        CREATE TABLE bookingactivity (
-            bookingactivityid INT PRIMARY KEY AUTO_INCREMENT,
-            fk_booking_id INT NOT NULL,
-            fk_activity_id INT NOT NULL,
-            DateStart DATE NOT NULL,
-            DateEnd DATE NOT NULL,
-            FOREIGN KEY (fk_booking_id) REFERENCES booking(bookingid),
-            FOREIGN KEY (fk_activity_id) REFERENCES activity(activityid)
-        );
-
-        CREATE TABLE bookinghotel
-        (
-            bookinghotelid INT PRIMARY KEY AUTO_INCREMENT,
-            fk_booking_id INT NOT NULL,
-            fk_room_id INT NOT NULL,
-            date_start DATE NOT NULL,
-            date_end DATE NOT NULL,
-            FOREIGN KEY (fk_booking_id) REFERENCES booking(bookingid),
-            FOREIGN KEY (fk_room_id) REFERENCES room(roomid)
-        );
-
-        CREATE TABLE country
-        (
-        countryid INT PRIMARY KEY AUTO_INCREMENT,
-        country VARCHAR(100)
-        );
-
-        CREATE TABLE bycountrysearch
-        (
-        bycountrysearchid INT PRIMARY KEY AUTO_INCREMENT,
-        fk_hotel_id INT,
-        fk_activity_id INT,
-        fk_transportation_id INT,
-        fk_country_id INT,
-        FOREIGN KEY (fk_hotel_id) REFERENCES hotel(hotelid),
-        FOREIGN KEY (fk_activity_id) REFERENCES activity(activityid),
-        FOREIGN KEY (fk_transportation_id) REFERENCES transportation(transportationid),
-        FOREIGN KEY (fk_country_id) REFERENCES country(countryid)
-        );
-    """; //create tables with fk connections
+    string holidaymakerdb = File.ReadAllText("data.ddl"); //create tables with fk connections
 
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, holidaymakerdb); //creating the database
 }
