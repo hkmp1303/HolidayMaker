@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS user (
     `password` VARCHAR(255) NOT NULL,
     firstname VARCHAR(100) NOT NULL,
     lastname VARCHAR(100) NOT NULL,
-    phonenumber VARCHAR(20) NOT NULL,
+    phonenumber VARCHAR(20) NULL, -- nullable
     `address` VARCHAR(255) NOT NULL,
     `role` ENUM ('customer', 'admin') NOT NULL,
     fk_holidaymakerab_id INT,
@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS amenity (
 CREATE TABLE IF NOT EXISTS hotelamenity (
     fk_hotel_id INT NOT NULL,
     fk_amenity_id INT NOT NULL,
+    PRIMARY KEY (`fk_hotel_id`, `fk_amenity_id`),
     FOREIGN KEY (fk_amenity_id) REFERENCES amenity(amenityid),
     FOREIGN KEY(fk_hotel_id) REFERENCES hotel(hotelid)
 );
