@@ -21,50 +21,50 @@ INSERT IGNORE INTO user (userid, email, password, firstname, lastname, phonenumb
 -- =========================================================
 -- 3. HOTEL  (POINT(lat lon), SRID 4326)
 -- =========================================================
-INSERT IGNORE INTO hotel (hotelid, name, description, address, city, phonenumber, total_capacity, coordinates) VALUES
+INSERT IGNORE INTO hotel (hotelid, name, description, address, city, phonenumber, email, total_capacity, coordinates) VALUES
 -- USA
-(1, 'The Plaza New York', 'Ikoniskt lyxhotell vid Central Park.', '768 5th Ave', 'New York', '+1-212-759-3000', 282, ST_GeomFromText('POINT(40.7645 -73.9744)', 4326)),
-(2, 'Beverly Hills Hotel', 'Kändistätt hotell i Los Angeles.', '9641 Sunset Blvd', 'Los Angeles', '+1-310-276-2251', 210, ST_GeomFromText('POINT(34.0816 -118.4137)', 4326)),
-(3, 'Miami Beach Resort', 'Hotell precis vid stranden och Ocean Drive.', '4833 Collins Ave', 'Miami', '+1-305-532-3600', 400, ST_GeomFromText('POINT(25.8240 -80.1216)', 4326)),
-(4, 'Caesars Palace', 'Gigantiskt casino-hotell i Las Vegas.', '3570 Las Vegas Blvd', 'Las Vegas', '+1-866-227-5938', 3960, ST_GeomFromText('POINT(36.1162 -115.1745)', 4326)),
-(5, 'Fairmont San Francisco', 'Historiskt hotell med utsikt över bukten.', '950 Mason St', 'San Francisco', '+1-415-772-5000', 600, ST_GeomFromText('POINT(37.7924 -122.4106)', 4326)),
+(1, 'The Plaza New York', 'Ikoniskt lyxhotell vid Central Park.', '768 5th Ave', 'New York', '+1-212-759-3000', 'plaza@fairmont.com', 282, ST_GeomFromText('POINT(40.7645 -73.9744)', 4326)),
+(2, 'Beverly Hills Hotel', 'Kändistätt hotell i Los Angeles.', '9641 Sunset Blvd', 'Los Angeles', '+1-310-276-2251', 'beverlyHills@hotel.com', 210, ST_GeomFromText('POINT(34.0816 -118.4137)', 4326)),
+(3, 'Miami Beach Resort', 'Hotell precis vid stranden och Ocean Drive.', '4833 Collins Ave', 'Miami', '+1-305-532-3600', 'miamibeachresort@resort.com', 400, ST_GeomFromText('POINT(25.8240 -80.1216)', 4326)),
+(4, 'Caesars Palace', 'Gigantiskt casino-hotell i Las Vegas.', '3570 Las Vegas Blvd', 'Las Vegas', '+1-866-227-5938', 'ceasar@palace.com', 3960, ST_GeomFromText('POINT(36.1162 -115.1745)', 4326)),
+(5, 'Fairmont San Francisco', 'Historiskt hotell med utsikt över bukten.', '950 Mason St', 'San Francisco', '+1-415-772-5000', 'fairmontSanFran@hotel.com', 600, ST_GeomFromText('POINT(37.7924 -122.4106)', 4326)),
 
 -- EUROPA
-(6, 'The Ritz Paris', 'Elegans i hjärtat av Paris.', '15 Place Vendôme', 'Paris', '+33-1-43-16-30-30', 142, ST_GeomFromText('POINT(48.8680 2.3290)', 4326)),
-(7, 'The Savoy London', 'Klassiskt brittiskt hotell vid Themsen.', 'Strand', 'London', '+44-20-7836-4343', 260, ST_GeomFromText('POINT(51.5103 -0.1206)', 4326)),
-(8, 'Hotel Arts Barcelona', 'Skyskrapa med utsikt över Medelhavet.', 'Carrer de la Marina 19', 'Barcelona', '+34-932-211-000', 480, ST_GeomFromText('POINT(41.3871 2.1963)', 4326)),
-(9, 'Hotel Danieli Venice', 'Legendariskt hotell nära Markusplatsen.', 'Riva degli Schiavoni 4196', 'Venedig', '+39-041-522-6480', 200, ST_GeomFromText('POINT(45.4338 12.3421)', 4326)),
-(10, 'Adlon Kempinski', 'Berömt hotell vid Brandenburger Tor.', 'Unter den Linden 77', 'Berlin', '+49-30-22610', 380, ST_GeomFromText('POINT(52.5160 13.3808)', 4326)),
-(11, 'Rome Cavalieri', 'Resort med panoramautsikt över Rom.', 'Via Alberto Cadlolo 101', 'Rom', '+39-06-35091', 370, ST_GeomFromText('POINT(41.9213 12.4431)', 4326)),
+(6, 'The Ritz Paris', 'Elegans i hjärtat av Paris.', '15 Place Vendôme', 'Paris', '+33-1-43-16-30-30', 'ritz@paris.com', 142, ST_GeomFromText('POINT(48.8680 2.3290)', 4326)),
+(7, 'The Savoy London', 'Klassiskt brittiskt hotell vid Themsen.', 'Strand', 'London', '+44-20-7836-4343', 'thesavoy@londonhotel.com', 260, ST_GeomFromText('POINT(51.5103 -0.1206)', 4326)),
+(8, 'Hotel Arts Barcelona', 'Skyskrapa med utsikt över Medelhavet.', 'Carrer de la Marina 19', 'Barcelona', '+34-932-211-000', 'hotelarts@barcelona.com', 480, ST_GeomFromText('POINT(41.3871 2.1963)', 4326)),
+(9, 'Hotel Danieli Venice', 'Legendariskt hotell nära Markusplatsen.', 'Riva degli Schiavoni 4196', 'Venedig', '+39-041-522-6480', 'hoteldanieli@venicehotel.com', 200, ST_GeomFromText('POINT(45.4338 12.3421)', 4326)),
+(10, 'Adlon Kempinski', 'Berömt hotell vid Brandenburger Tor.', 'Unter den Linden 77', 'Berlin', '+49-30-22610', 'adlon@keminskihotel.com', 380, ST_GeomFromText('POINT(52.5160 13.3808)', 4326)),
+(11, 'Rome Cavalieri', 'Resort med panoramautsikt över Rom.', 'Via Alberto Cadlolo 101', 'Rom', '+39-06-35091', 'rome.cavalieri@hotel.com', 370, ST_GeomFromText('POINT(41.9213 12.4431)', 4326)),
 
 -- ASIEN
-(12, 'Marina Bay Sands', 'Världskänd pool på taket som ser ut som en båt.', '10 Bayfront Ave', 'Singapore', '+65-6688-8888', 2560, ST_GeomFromText('POINT(1.2834 103.8607)', 4326)),
-(13, 'Park Hyatt Tokyo', 'Känt från filmen Lost in Translation.', '3-7-1-2 Nishi-Shinjuku', 'Tokyo', '+81-3-5322-1234', 170, ST_GeomFromText('POINT(35.6856 139.6911)', 4326)),
-(14, 'Mandarin Oriental Bangkok', 'Lyxhotell vid floden Chao Phraya.', '48 Oriental Ave', 'Bangkok', '+66-2-659-9000', 330, ST_GeomFromText('POINT(13.7233 100.5144)', 4326)),
-(15, 'Taj Mahal Palace', 'Historiskt landmärke vid havet.', 'Apollo Bunder', 'Mumbai', '+91-22-6665-3366', 560, ST_GeomFromText('POINT(18.9217 72.8332)', 4326)),
-(16, 'Burj Al Arab', 'Sjöstjärneformat 7-stjärnigt hotell.', 'Jumeirah St', 'Dubai', '+971-4-301-7777', 200, ST_GeomFromText('POINT(25.1412 55.1853)', 4326)),
-(17, 'Atlantis The Palm', 'Resort på den konstgjorda ön Palm Jumeirah.', 'Crescent Rd', 'Dubai', '+971-4-426-2000', 1500, ST_GeomFromText('POINT(25.1304 55.1171)', 4326)),
+(12, 'Marina Bay Sands', 'Världskänd pool på taket som ser ut som en båt.', '10 Bayfront Ave', 'Singapore', '+65-6688-8888', 'marianbay@sands.com', 2560, ST_GeomFromText('POINT(1.2834 103.8607)', 4326)),
+(13, 'Park Hyatt Tokyo', 'Känt från filmen Lost in Translation.', '3-7-1-2 Nishi-Shinjuku', 'Tokyo', '+81-3-5322-1234', 'parkhyatt@tokyohotel.com', 170, ST_GeomFromText('POINT(35.6856 139.6911)', 4326)),
+(14, 'Mandarin Oriental Bangkok', 'Lyxhotell vid floden Chao Phraya.', '48 Oriental Ave', 'Bangkok', '+66-2-659-9000', 'mandarin@bangkok.com', 330, ST_GeomFromText('POINT(13.7233 100.5144)', 4326)),
+(15, 'Taj Mahal Palace', 'Historiskt landmärke vid havet.', 'Apollo Bunder', 'Mumbai', '+91-22-6665-3366', 'tajmahalpalace@resort.com', 560, ST_GeomFromText('POINT(18.9217 72.8332)', 4326)),
+(16, 'Burj Al Arab', 'Sjöstjärneformat 7-stjärnigt hotell.', 'Jumeirah St', 'Dubai', '+971-4-301-7777', 'burjialarab@resort.com', 200, ST_GeomFromText('POINT(25.1412 55.1853)', 4326)),
+(17, 'Atlantis The Palm', 'Resort på den konstgjorda ön Palm Jumeirah.', 'Crescent Rd', 'Dubai', '+971-4-426-2000', 'atlantisthepalm@hotel.com', 1500, ST_GeomFromText('POINT(25.1304 55.1171)', 4326)),
 
 -- AUSTRALIEN & OCEANIEN
-(18, 'Park Hyatt Sydney', 'Utsikt direkt mot operahuset.', '7 Hickson Rd', 'Sydney', '+61-2-9256-1234', 155, ST_GeomFromText('POINT(-33.8550 151.2093)', 4326)),
-(19, 'Four Seasons Bora Bora', 'Bungalows ute på vattnet.', 'Motu Tehotu', 'Bora Bora', '+689-40-60-31-30', 100, ST_GeomFromText('POINT(-16.4746 -151.7248)', 4326)),
-(20, 'Sofitel Auckland', 'Lyx vid hamnen Viaduct Harbour.', '21 Viaduct Harbour Ave', 'Auckland', '+64-9-909-9000', 170, ST_GeomFromText('POINT(-36.8437 174.7594)', 4326)),
+(18, 'Park Hyatt Sydney', 'Utsikt direkt mot operahuset.', '7 Hickson Rd', 'Sydney', '+61-2-9256-1234', 'parkhyatt@sydneyhotel.com', 155, ST_GeomFromText('POINT(-33.8550 151.2093)', 4326)),
+(19, 'Four Seasons Bora Bora', 'Bungalows ute på vattnet.', 'Motu Tehotu', 'Bora Bora', '+689-40-60-31-30', 'fourseasons@borahotel.com', 100, ST_GeomFromText('POINT(-16.4746 -151.7248)', 4326)),
+(20, 'Sofitel Auckland', 'Lyx vid hamnen Viaduct Harbour.', '21 Viaduct Harbour Ave', 'Auckland', '+64-9-909-9000', 'sofitel@auckland.com', 170, ST_GeomFromText('POINT(-36.8437 174.7594)', 4326)),
 
 -- SYDAMERIKA
-(21, 'Copacabana Palace', 'Art Deco-hotell vid stranden.', 'Av. Atlântica 1702', 'Rio de Janeiro', '+55-21-2548-7070', 230, ST_GeomFromText('POINT(-22.9673 -43.1790)', 4326)),
-(22, 'Alvear Palace', 'Klassisk fransk stil i Sydamerika.', 'Av. Alvear 1891', 'Buenos Aires', '+54-11-4808-2100', 190, ST_GeomFromText('POINT(-34.5880 -58.3900)', 4326)),
+(21, 'Copacabana Palace', 'Art Deco-hotell vid stranden.', 'Av. Atlântica 1702', 'Rio de Janeiro', '+55-21-2548-7070', 'copacabana@palace.com', 230, ST_GeomFromText('POINT(-22.9673 -43.1790)', 4326)),
+(22, 'Alvear Palace', 'Klassisk fransk stil i Sydamerika.', 'Av. Alvear 1891', 'Buenos Aires', '+54-11-4808-2100', 'alvear@palace.com', 190, ST_GeomFromText('POINT(-34.5880 -58.3900)', 4326)),
 
 -- AFRIKA
-(23, 'La Mamounia', 'Palatshotell med stora trädgårdar.', 'Avenue Bab Jdid', 'Marrakech', '+212-524-388-600', 200, ST_GeomFromText('POINT(31.6218 -7.9972)', 4326)),
-(24, 'The Table Bay', 'Vid Waterfront med utsikt över Taffelberget.', 'Quay 6', 'Kapstaden', '+27-21-406-5000', 320, ST_GeomFromText('POINT(-33.9056 18.4230)', 4326)),
+(23, 'La Mamounia', 'Palatshotell med stora trädgårdar.', 'Avenue Bab Jdid', 'Marrakech', '+212-524-388-600', 'lamamounia@plalatshotel', 200, ST_GeomFromText('POINT(31.6218 -7.9972)', 4326)),
+(24, 'The Table Bay', 'Vid Waterfront med utsikt över Taffelberget.', 'Quay 6', 'Kapstaden', '+27-21-406-5000', 'thetable@bayhotel.com', 320, ST_GeomFromText('POINT(-33.9056 18.4230)', 4326)),
 
 -- NORDEN
-(25, 'Gothia Sky Towers', 'Fantastisk utsikt över Göteborg.', 'Mässans Gata 24', 'Göteborg', '+46-31-123456', 1200, ST_GeomFromText('POINT(57.6969 11.9865)', 4326)),
-(26, 'Grand Hôtel', 'Vid Stockholms ström.', 'S. Blasieholmshamnen 8', 'Stockholm', '+46-8-123456', 300, ST_GeomFromText('POINT(59.3295 18.0754)', 4326)),
-(27, 'Icehotel', 'Byggt av snö och is.', 'Marknadsvägen 63', 'Jukkasjärvi', '+46-980-12345', 100, ST_GeomFromText('POINT(67.8512 20.6154)', 4326)),
-(28, 'Villa Copenhagen', 'Nytt lyxhotell i gamla posthuset.', 'Tietgensgade 35', 'Köpenhamn', '+45-78-73-00-00', 390, ST_GeomFromText('POINT(55.6725 12.5695)', 4326)),
-(29, 'Hotel Kämp', 'Finlands mest kända hotell.', 'Pohjoisesplanadi 29', 'Helsingfors', '+358-9-576-111', 179, ST_GeomFromText('POINT(60.1678 24.9482)', 4326)),
-(30, 'The Thief', 'Designhotell på Tjuvholmen.', 'Landgangen 1', 'Oslo', '+47-24-00-40-00', 119, ST_GeomFromText('POINT(59.9075 10.7225)', 4326));
+(25, 'Gothia Sky Towers', 'Fantastisk utsikt över Göteborg.', 'Mässans Gata 24', 'Göteborg', '+46-31-123456', 'gothia.faulty@towers.se', 1200, ST_GeomFromText('POINT(57.6969 11.9865)', 4326)),
+(26, 'Grand Hôtel', 'Vid Stockholms ström.', 'S. Blasieholmshamnen 8', 'Stockholm', '+46-8-123456', 'grandhotel@stockhom.se', 300, ST_GeomFromText('POINT(59.3295 18.0754)', 4326)),
+(27, 'Icehotel', 'Byggt av snö och is.', 'Marknadsvägen 63', 'Jukkasjärvi', '+46-980-12345', 'icehotel@ishotell.se', 100, ST_GeomFromText('POINT(67.8512 20.6154)', 4326)),
+(28, 'Villa Copenhagen', 'Nytt lyxhotell i gamla posthuset.', 'Tietgensgade 35', 'Köpenhamn', '+45-78-73-00-00', 'villacopenhagen@lyxhotell.dk', 390, ST_GeomFromText('POINT(55.6725 12.5695)', 4326)),
+(29, 'Hotel Kämp', 'Finlands mest kända hotell.', 'Pohjoisesplanadi 29', 'Helsingfors', '+358-9-576-111', 'hotelkamp@finland.fi', 179, ST_GeomFromText('POINT(60.1678 24.9482)', 4326)),
+(30, 'The Thief', 'Designhotell på Tjuvholmen.', 'Landgangen 1', 'Oslo', '+47-24-00-40-00', 'thethief@stold.no', 119, ST_GeomFromText('POINT(59.9075 10.7225)', 4326));
 
 -- =========================================================
 -- 4. AMENITY
@@ -229,7 +229,21 @@ INSERT IGNORE INTO country (countryid, country) VALUES
 (3, 'Denmark'),
 (4, 'Spain'),
 (5, 'Italy'),
-(6, 'Germany');
+(6, 'Germany'),
+(7, 'United States'),
+(8, 'France'),
+(9, 'United Kingdom'),
+(10, 'Singapore'),
+(11, 'Japan'),
+(12, 'Thailand'),
+(13, 'India'),
+(14, 'Australia'),
+(15, 'United Arab Emirates'),
+(16, 'Brazil'),
+(17, 'Argentina'),
+(18, 'Morocco'),
+(19, 'South Africa'),
+(20, 'Finland');
 
 -- =========================================================
 -- 15. BYCOUNTRYSEARCH
