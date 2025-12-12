@@ -29,6 +29,8 @@ app.MapPost("/createuser", CreateUser.Post);
 app.MapPost("/booking", BookingRequest.CreateBooking);
 //package booking from pre-made packagedetails
 app.MapPost("/package", PackageBooking.CreatePackageBooking);
+//Cancel a travel package
+app.MapPatch("/CancelTP", PackageBooking.CancelTPBooking);
 
 app.MapPost("/rooms/availability", HotelsQ.GetAvailableHotels);
 
