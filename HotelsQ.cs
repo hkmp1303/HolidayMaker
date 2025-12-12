@@ -1,8 +1,12 @@
-using System.Net.Mime;
+
 using MySql.Data.MySqlClient;
+using Microsoft.AspNetCore.Mvc;  // VIKTIGT: För [FromBody] och [FromServices]
+
 namespace server;
 
-// Vi skapar en enkel modell för Hotel
+public record DateSearchRequest(DateTime StartDate, DateTime EndDate, int MinRooms);
+    
+public record HotelResult(int Id, string Name, string City, string Description, int AvailableRooms);
 
 
 public class HotelsQ
@@ -154,5 +158,55 @@ public record PricedHotel(int Id, string Name, decimal Price);
         ));
     }
     return hotels;
+    }
+
+    public static async Task<List<HotelResult>> GetAvailableHotels(
+        [FromBody] DateSearchRequest request,
+        [FromServices] Config config)
+    {
+        var availableHotels = new List<HotelResult>();
+
+
+        var sql = @"
+        SELECT 
+            h.hotelid, 
+            h.name, 
+            h.city, 
+            h.description, 
+            COUNT(r.roomid) as available_count
+        FROM hotel h
+        JOIN room r ON h.hotelid = r.fk_hotel_id
+        WHERE r.roomid NOT IN (
+            SELECT bh.fk_room_id 
+            FROM bookinghotel bh
+            WHERE 
+                (bh.date_start < @endDate AND bh.date_end > @startDate)
+        )
+        GROUP BY h.hotelid, h.name, h.city, h.description
+        HAVING available_count >= @minRooms";
+
+        var parameters = new List<MySqlParameter>
+        {
+            new MySqlParameter("@startDate", request.StartDate),
+            new MySqlParameter("@endDate", request.EndDate),
+            new MySqlParameter("@minRooms", request.MinRooms)
+        };
+
+        using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql, parameters.ToArray());
+
+        while (await reader.ReadAsync())
+        {
+            availableHotels.Add(new HotelResult(
+                reader.GetInt32("hotelid"),
+                reader.GetString("name"),
+                reader.GetString("city"),
+                reader.GetString("description"),
+                reader.GetInt32("available_count")
+            ));
+        }
+
+        return availableHotels;
+
+    
     }
 }

@@ -32,6 +32,8 @@ app.MapPost("/package", PackageBooking.CreatePackageBooking);
 //Cancel a travel package
 app.MapPatch("/CancelTP", PackageBooking.CancelTPBooking);
 
+app.MapPost("/rooms/availability", HotelsQ.GetAvailableHotels);
+
 //Reset and create the database
 app.MapDelete("/db", DbReset);
 app.MapGet("/Hotels", HotelsQ.GetHotels);
