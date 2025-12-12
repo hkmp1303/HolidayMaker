@@ -37,6 +37,7 @@ app.MapGet("/fhotel", HotelsQ.GetHotelsAdmin);
 app.MapGet("/hotel", HotelsQ.GetHotelsfull);
 app.MapGet("/HotelPrice", HotelsQ.GetHotelPrice);
 app.MapGet("/activities/{country}", ActivitiesQ.GetActivitiesByCountry);
+app.MapGet("/activity/{id}", ActivitiesQ.GetActivityById);
 app.MapGet("/HotelAmenity", HotelsQ.GetHotelAmenities);
 
 app.Run();
