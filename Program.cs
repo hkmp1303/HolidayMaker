@@ -30,6 +30,8 @@ app.MapPost("/booking", BookingRequest.CreateBooking);
 //package booking from pre-made packagedetails
 app.MapPost("/package", PackageBooking.CreatePackageBooking);
 
+app.MapPost("/rooms/availability", HotelsQ.GetAvailableHotels);
+
 //Reset and create the database
 app.MapDelete("/db", DbReset);
 app.MapGet("/Hotels", HotelsQ.GetHotels);
