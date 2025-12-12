@@ -29,6 +29,8 @@ app.MapPost("/createuser", CreateUser.Post);
 app.MapPost("/booking", BookingRequest.CreateBooking);
 //package booking from pre-made packagedetails
 app.MapPost("/package", PackageBooking.CreatePackageBooking);
+//Cancel a travel package
+app.MapPatch("/CancelTP", PackageBooking.CancelTPBooking);
 
 //Reset and create the database
 app.MapDelete("/db", DbReset);
