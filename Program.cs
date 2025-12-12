@@ -27,6 +27,8 @@ app.MapPost("/login", Login.Post);
 app.MapPost("/createuser", CreateUser.Post);
 //booking
 app.MapPost("/booking", BookingRequest.CreateBooking);
+//package booking from pre-made packagedetails
+app.MapPost("/package", PackageBooking.CreatePackageBooking);
 
 //Reset and create the database
 app.MapDelete("/db", DbReset);
