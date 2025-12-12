@@ -14,7 +14,7 @@ public class ActivitiesQ
 
   // Hämtar alla aktiviteter kopplade till ett visst land (resmål)
   // countryName = t.ex. "Sweden", "Spain", "Italy"
-  public static async Task<List<ActivityFull>> GetActivitiesByCountry(string countryName, Config config)
+  public static async Task<List<ActivityFull>> GetActivitiesByCountry(string country, Config config)
   {
     // Lista som vi fyller med aktiviteter från databasen
     var activities = new List<ActivityFull>();
@@ -30,20 +30,21 @@ public class ActivitiesQ
                 a.phonenumber,
                 a.address,
                 a.city,
-                a.price,
+                p.price AS price,
                 a.description,
                 ST_X(a.coordinates) AS x,
                 ST_Y(a.coordinates) AS y
             FROM activity a
             JOIN bycountrysearch bcs ON a.activityid = bcs.fk_activity_id
             JOIN country c ON bcs.fk_country_id = c.countryid
-            WHERE c.country = @countryName
+            JOIN price p ON a.fk_price_id = p.priceid
+            WHERE c.country = @country
         ";
 
     // Parameter för att undvika SQL injection och skicka in landets namn
     var parameters = new MySqlParameter[]
     {
-            new("@countryName", countryName)
+            new("@country", country)
     };
 
     // Kör SQL frågan mot databasen och får tillbaka en datareader
@@ -73,7 +74,7 @@ public class ActivitiesQ
   }
 
   // Hämtar bara id och namn för aktiviteter
-  public static async Task<List<ActivitySimple>> GetSimpleActivitiesByCountry(string countryName, Config config)
+  public static async Task<List<ActivitySimple>> GetSimpleActivitiesByCountry(string country, Config config)
   {
     var activities = new List<ActivitySimple>();
 
@@ -84,12 +85,12 @@ public class ActivitiesQ
             FROM activity a
             JOIN bycountrysearch bcs ON a.activityid = bcs.fk_activity_id
             JOIN country c ON bcs.fk_country_id = c.countryid
-            WHERE c.country = @countryName
+            WHERE c.country = @country
         ";
 
     var parameters = new MySqlParameter[]
     {
-            new("@countryName", countryName)
+            new("@country", country)
     };
 
     using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql, parameters);
@@ -109,20 +110,21 @@ public class ActivitiesQ
   public static async Task<ActivityFull?> GetActivityById(int id, Config config)
   {
     string sql = @"
-        SELECT 
-            activityid,
-            name,
-            phonenumber,
-            address,
-            city,
-            price,
-            description,
-            ST_X(coordinates) AS x,
-            ST_Y(coordinates) AS y
-        FROM activity
-        WHERE activityid = @id
-        LIMIT 1;
-    ";
+      SELECT 
+          a.activityid,
+          a.name,
+          a.phonenumber,
+          a.address,
+          a.city,
+          p.price AS price,
+          a.description,
+          ST_X(a.coordinates) AS x,
+          ST_Y(a.coordinates) AS y
+      FROM activity a
+      JOIN price p ON a.fk_price_id = p.priceid
+      WHERE a.activityid = @id
+      LIMIT 1;
+  ";
 
     // Parameter för att undvika SQL injection
     var param = new MySqlParameter("@id", id);
