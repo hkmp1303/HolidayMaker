@@ -13,8 +13,11 @@ CREATE TABLE IF NOT EXISTS user (
     `password` VARCHAR(255) NOT NULL,
     firstname VARCHAR(100) NOT NULL,
     lastname VARCHAR(100) NOT NULL,
-    phonenumber VARCHAR(20) NULL, -- nullable
+    phonenumber VARCHAR(20) NULL,
     `address` VARCHAR(255) NOT NULL,
+    consent DATETIME NULL,
+    requestDelete DATETIME NULL,
+    requestPass VARCHAR(36) NULL,
     `role` ENUM ('customer', 'admin') NOT NULL,
     fk_holidaymakerab_id INT,
     FOREIGN KEY(fk_holidaymakerab_id) REFERENCES holidaymakerab(holidaymakerabid)

@@ -10,13 +10,13 @@ INSERT IGNORE INTO holidaymakerab (holidaymakerabid, name, phonenumber, email, a
 -- =========================================================
 -- 2. USER  (OBS: tabellnamn "user")
 -- =========================================================
-INSERT IGNORE INTO user (userid, email, password, firstname, lastname, phonenumber, address, role, fk_holidaymakerab_id) VALUES
-(1, 'anna.kund@example.com',   'hashed_pw_1', 'Anna',   'Svensson',  '+46-70-1111111', 'Storgatan 1, 411 00 Göteborg',  'customer', 1),
-(2, 'erik.kund@example.com',   'hashed_pw_2', 'Erik',   'Johansson', '+46-70-2222222', 'Sveavägen 12, 111 57 Stockholm','customer', 2),
-(3, 'maria.kund@example.com',  'hashed_pw_3', 'Maria',  'Nilsson',   '+46-70-3333333', 'Föreningsgatan 20, 214 26 Malmö','customer',3),
-(4, 'david.kund@example.com',  'hashed_pw_4', 'David',  'Karlsson',  '+46-70-4444444', 'Linnégatan 7, 413 04 Göteborg', 'customer', 1),
-(5, 'lisa.admin@example.com',  'hashed_pw_5', 'Lisa',   'Andersson', '+46-70-5555555', 'Kungsgatan 5, 411 19 Göteborg', 'admin',    1),
-(6, 'peter.admin@example.com', 'hashed_pw_6', 'Peter',  'Berg',      '+46-70-6666666', 'Vasagatan 15, 111 20 Stockholm','admin',    2);
+INSERT IGNORE INTO user (userid, email, password, firstname, lastname, phonenumber, address, consent, requestDelete, requestPass, role, fk_holidaymakerab_id) VALUES
+(1, 'anna.kund@example.com',   'hashed_pw_1', 'Anna',   'Svensson',  '+46-70-1111111', 'Storgatan 1, 411 00 Göteborg', '2025-12-05 12:32:05', '2025-12-05 12:34:03', NULL, 'customer', 1),
+(2, 'erik.kund@example.com',   'hashed_pw_2', 'Erik',   'Johansson', '+46-70-2222222', 'Sveavägen 12, 111 57 Stockholm', NULL, NULL, NULL, 'customer', 2),
+(3, 'maria.kund@example.com',  'hashed_pw_3', 'Maria',  'Nilsson',   '+46-70-3333333', 'Föreningsgatan 20, 214 26 Malmö', '2025-01-23 10:23:17', NULL, NULL, 'customer',3),
+(4, 'david.kund@example.com',  'hashed_pw_4', 'David',  'Karlsson',  '+46-70-4444444', 'Linnégatan 7, 413 04 Göteborg', NULL, '2024-12-26 04:56:34', NULL, 'customer', 1),
+(5, 'lisa.admin@example.com',  'hashed_pw_5', 'Lisa',   'Andersson', '+46-70-5555555', 'Kungsgatan 5, 411 19 Göteborg', NULL, NULL, NULL, 'admin',    1),
+(6, 'peter.admin@example.com', 'hashed_pw_6', 'Peter',  'Berg',      '+46-70-6666666', 'Vasagatan 15, 111 20 Stockholm', NULL, NULL, NULL, 'admin',    2);
 
 -- =========================================================
 -- 3. HOTEL  (POINT(lat lon), SRID 4326)
