@@ -30,6 +30,9 @@ app.MapPost("/requestPassword", Login.Post_RequestPassword);
 app.MapPost("/resetPassword", Login.Post_ResetPassword);
 //create user
 app.MapPost("/createuser", CreateUser.Post);
+// Logout
+app.MapPost("/logout", Logout.Post);
+
 //booking
 app.MapPost("/booking", BookingRequest.CreateBooking);
 //package booking from pre-made packagedetails
