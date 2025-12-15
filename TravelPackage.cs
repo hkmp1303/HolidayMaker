@@ -157,6 +157,47 @@ static class PackageBooking
     }
         return false;
     }
+
+        public record TravelPackageList(int bookingid, string hotelname, string activityname);
+        public static async Task<List<TravelPackageList>> Tplist(Config config, HttpContext ctx)
+        {
+
+            var tplist = new List<TravelPackageList>();
+
+            if (ctx.Session.IsAvailable)
+            {
+
+            
+                string listpackagequery = """                      
+                            SELECT b.bookingid,
+                            h.name AS hotelname,
+                            a.name AS activityname
+                            FROM booking AS b
+                            JOIN bookinghotel AS bh ON b.bookingid = bh.fk_booking_id
+                            JOIN bookingactivity AS ba ON b.bookingid = ba.fk_booking_id
+                            JOIN room AS r ON bh.fk_room_id = r.roomid
+                            JOIN hotel AS h ON r.fk_hotel_id = h.hotelid
+                            JOIN activity AS a ON ba.fk_activity_id = a.activityid
+                            ORDER BY b.bookingid DESC;
+                            """;
+
+                
+
+                using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, listpackagequery);
+
+
+                while(await reader.ReadAsync())
+                {
+                tplist.Add(new TravelPackageList(
+
+                        reader.GetInt32("bookingid"),
+                        reader.GetString("hotelname"),
+                        reader.GetString("activityname")
+                ));
+                }
+            }
+        return tplist;
+    }
 }
 
 
