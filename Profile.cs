@@ -10,10 +10,11 @@ static class Profile
     public static async Task<Get_Data?> Get_UserData(Config config, HttpContext ctx)
     {
         Get_Data? result = null;
-        if (!ctx.Session.IsAvailable)
+        if (!ctx.Session.IsAvailable || ctx.Session.GetInt32("user_id") is not int user_id)
+        {
+            ctx.Response.StatusCode = 401;
             return null;
-        if (ctx.Session.GetInt32("user_id") is not int user_id)
-            return null;
+        }
         string query = """
                         SELECT email, firstname, lastname, phonenumber, address, consent, requestDelete
                         FROM user WHERE userid = @id LIMIT 1
@@ -52,7 +53,6 @@ static class Profile
             if (user.Read())
                 role = user.GetString(0);
         }
-                string query = @"UPDATE user SET ";
         List<string> userValues = new();
         if (data.Email != null)
         {
@@ -120,7 +120,7 @@ static class Profile
         }
         if (userValues.Count > 0)
         {
-            query += string.Join(',', userValues) + " WHERE userid = @id";
+            string query = "UPDATE IGNORE user SET " + string.Join(',', userValues) + " WHERE userid = @id";
             int updatedRows = await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters.ToArray());
             if (updatedRows == 0) { status = "error"; errors.Add("Sql failed to update profile"); }
         }
@@ -138,7 +138,7 @@ static class Profile
             if (result.Read())
             {
                 int deletedRows = MySqlHelper.ExecuteNonQuery(config.ConnectionString, """
-                UPDATE user SET email ='', password ='', firstname ='', lastname ='', phonenumber = NULL,
+                UPDATE user SET email = NULL, password ='', firstname ='', lastname ='', phonenumber = NULL,
                                 address ='', consent =NULL
                 WHERE DATE_ADD(requestDelete, INTERVAL 30 DAY) < NOW()
                 """);
