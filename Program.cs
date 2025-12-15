@@ -21,8 +21,13 @@ app.MapGet("/", () => "Server is running");
 app.MapGet("/profile", Profile.Get_UserData);
 // Update user data by user
 app.MapPatch("/profile", Profile.Patch_UserData);
+// Delete user info by admin per user request
+app.MapDelete("/profile", Profile.DeleteUserData);
 // Login
 app.MapPost("/login", Login.Post);
+// forgot password
+app.MapPost("/requestPassword", Login.Post_RequestPassword);
+app.MapPost("/resetPassword", Login.Post_ResetPassword);
 //create user
 app.MapPost("/createuser", CreateUser.Post);
 //booking
