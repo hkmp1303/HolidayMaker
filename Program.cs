@@ -32,13 +32,22 @@ app.MapPost("/resetPassword", Login.Post_ResetPassword);
 app.MapPost("/createuser", CreateUser.Post);
 //booking
 app.MapPost("/booking", BookingRequest.CreateBooking);
+//package booking from pre-made packagedetails
+app.MapPost("/package", PackageBooking.CreatePackageBooking);
+//Cancel a travel package
+app.MapPatch("/CancelTP", PackageBooking.CancelTPBooking);
+
+app.MapPost("/rooms/availability", HotelsQ.GetAvailableHotels);
 
 //Reset and create the database
 app.MapDelete("/db", DbReset);
-app.MapGet("/Hotel", HotelsQ.GetHotels);
-app.MapGet("/fhotel", HotelsQ.GetHotelsfull);
-app.MapGet("/HotelPrice", HotelsQ.SortHotelPrice);
+app.MapGet("/Hotels", HotelsQ.GetHotels);
+app.MapGet("/fhotel", HotelsQ.GetHotelsAdmin);
+app.MapGet("/hotel", HotelsQ.GetHotelsfull);
+app.MapGet("/HotelPrice", HotelsQ.GetHotelPrice);
 app.MapGet("/activities/{country}", ActivitiesQ.GetActivitiesByCountry);
+app.MapGet("/activity/{id}", ActivitiesQ.GetActivityById);
+app.MapGet("/HotelAmenity", HotelsQ.GetHotelAmenities);
 
 app.Run();
 
@@ -61,7 +70,9 @@ async Task DbReset(Config config) //create tables, also hard reset
         holidaymakerab,
         activity,
         country,
-        bycountrysearch;
+        bycountrysearch,
+        travelpackage,
+        packagedetails;
     SET FOREIGN_KEY_CHECKS =1;
     """; //string that hold the databse and fk
 

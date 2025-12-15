@@ -148,4 +148,23 @@ CREATE TABLE IF NOT EXISTS bycountrysearch (
     FOREIGN KEY (fk_transportation_id) REFERENCES transportation(transportationid),
     FOREIGN KEY (fk_country_id) REFERENCES country(countryid)
 );
+
+CREATE TABLE IF NOT EXISTS travelpackage(
+    travelpackageid INT PRIMARY KEY AUTO_INCREMENT,
+    fk_user_id INT,
+    fk_holidaymakerab_id INT,
+    title VARCHAR(100) NOT NULL UNIQUE,
+    FOREIGN KEY (fk_user_id) REFERENCES user(userid),
+    FOREIGN KEY (fk_holidaymakerab_id) REFERENCES holidaymakerab(holidaymakerabid)
+);
+
+CREATE TABLE IF NOT EXISTS packagedetails(
+    packagedetailsid INT PRIMARY KEY AUTO_INCREMENT,
+    fk_travelpackage_id INT,
+    fk_hotel_id INT,
+    fk_activity_id INT,
+    FOREIGN KEY (fk_travelpackage_id) REFERENCES travelpackage(travelpackageid),
+    FOREIGN KEY (fk_activity_id) REFERENCES activity(activityid),
+    FOREIGN KEY (fk_hotel_id) REFERENCES hotel(hotelid)
+);
 SET FOREIGN_KEY_CHECKS = 1;
