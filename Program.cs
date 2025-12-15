@@ -38,6 +38,7 @@ app.MapPost("/package", PackageBooking.CreatePackageBooking);
 app.MapPatch("/CancelTP", PackageBooking.CancelTPBooking);
 
 app.MapPost("/rooms/availability", HotelsQ.GetAvailableHotels);
+app.MapPost("hotels/Name", HotelsQ.GetnameHotels) ;
 
 //ReadAllText
 app.MapGet("/tplist", PackageBooking.Tplist);
