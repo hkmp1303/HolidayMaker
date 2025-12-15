@@ -38,6 +38,7 @@ app.MapPost("/package", PackageBooking.CreatePackageBooking);
 app.MapPatch("/CancelTP", PackageBooking.CancelTPBooking);
 
 app.MapPost("/rooms/availability", HotelsQ.GetAvailableHotels);
+app.MapPost("hotels/Name", HotelsQ.GetnameHotels) ;
 
 //Reset and create the database
 app.MapDelete("/db", DbReset);
