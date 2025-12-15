@@ -137,6 +137,7 @@ static class PackageBooking
         }
         
     }
+
     public record CancelTP(int BookingId, DateTime BookingDate, int UserId, int? TransportationId, string Status);
     public static async Task<bool> CancelTPBooking(HttpContext ctx, Config config, int bookingId)  
     {
@@ -198,6 +199,62 @@ static class PackageBooking
             }
         return tplist;
     }
+
+    public record MyPackageList(int bookingid, int userid, string hotelname, string room, double roomprice, string activityname, double activityprice);
+    public static async Task<List<MyPackageList>> Mytplist(Config config, HttpContext ctx)
+    {
+        if (ctx.Session.IsAvailable)
+        {
+            if(ctx.Session.GetInt32("user_id") is int user_id)
+            {
+                using var con = new MySqlConnection(config.ConnectionString);
+
+                await con.OpenAsync();
+
+                using var transaction = con.BeginTransaction();
+
+                string mytpquary = """
+                        SELECT b.bookingid as yourbooking,
+                        u.userid as usernamn,
+                        h.name AS hotelname,
+                        r.roomtype as room,
+                        rp.price as roomprice,
+                        a.name AS activityname,
+                        ap.price as activityprice
+                        FROM booking AS b
+                        join user as u on b.fk_user_id = u.userid
+                        JOIN bookinghotel AS bh ON b.bookingid = bh.fk_booking_id
+                        JOIN bookingactivity AS ba ON b.bookingid = ba.fk_booking_id
+                        JOIN room AS r ON bh.fk_room_id = r.roomid
+                        JOIN hotel AS h ON r.fk_hotel_id = h.hotelid
+                        JOIN activity AS a ON ba.fk_activity_id = a.activityid
+                        join price as rp on r.fk_price_id = rp.priceid
+                        join price as ap on a.fk_price_id = ap.priceid
+                        ORDER BY b.bookingid DESC;          
+                """;
+            }
+        }
+    }
+
+    /*SELECT b.bookingid as yourbooking,
+u.userid as usernamn,
+h.name AS hotelname,
+r.roomtype as room,
+rp.price as roomprice,
+a.name AS activityname,
+ap.price as activityprice
+FROM booking AS b
+join user as u on b.fk_user_id = u.userid
+JOIN bookinghotel AS bh ON b.bookingid = bh.fk_booking_id
+JOIN bookingactivity AS ba ON b.bookingid = ba.fk_booking_id
+JOIN room AS r ON bh.fk_room_id = r.roomid
+JOIN hotel AS h ON r.fk_hotel_id = h.hotelid
+JOIN activity AS a ON ba.fk_activity_id = a.activityid
+join price as rp on r.fk_price_id = rp.priceid
+join price as ap on a.fk_price_id = ap.priceid
+ORDER BY b.bookingid DESC;*/
+
+
 }
 
 
