@@ -36,7 +36,15 @@ public class HotelsQ
     {
         var hotels = new List<HotelAdmin>();
         
-        var sql = "SELECT hotelid, name, description, address, city, phonenumber, email, total_capacity, ST_X(coordinates) AS x, ST_Y(coordinates) AS y FROM hotel"; 
+        var sql = @"SELECT hotelid,
+       name,
+       description,
+       address,
+       city,
+       phonenumber,
+       email,
+       total_capacity,
+       ST_X(coordinates) AS x, ST_Y(coordinates) AS y FROM hotel"; 
 
         using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql);
 
@@ -161,8 +169,8 @@ public record PricedHotel(int Id, string Name, decimal Price);
     }
 
     public static async Task<List<HotelResult>> GetAvailableHotels(
-        [FromBody] DateSearchRequest request,
-        [FromServices] Config config)
+         DateSearchRequest request,
+        Config config)
     {
         var availableHotels = new List<HotelResult>();
 
@@ -208,5 +216,47 @@ public record PricedHotel(int Id, string Name, decimal Price);
         return availableHotels;
 
     
+    }
+    public record Hotelname(string Name,  string Description, string Address,
+        string City, string Phonenumber, string Email, int Totalcapacity);
+
+    public static async Task<List<Hotelname>> GetnameHotels(
+        Hotelname request,
+        Config config)
+    {
+        var hotelbyname = new List<Hotelname>();
+
+        var sql = @"SELECT
+       name,
+       description,
+       address,
+       city,
+       phonenumber,
+       email,
+       total_capacity FROM hotel h
+       where h.name LIKE @name";
+
+        var parameters = new List<MySqlParameter>
+        {
+                
+            new MySqlParameter("@name", "%"+ request.Name + "%")
+        };
+      
+
+        using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql, parameters.ToArray());
+
+        while (await reader.ReadAsync())
+        {
+            hotelbyname.Add(new Hotelname(
+                reader.GetString("name"),
+                reader.GetString("description"),
+                reader.GetString("address"),
+                reader.GetString("city"),
+                reader.GetString("phonenumber"),
+                reader.GetString("email"),
+                reader.GetInt32("total_capacity")
+            ));
+        }
+        return hotelbyname;
     }
 }
