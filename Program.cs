@@ -25,11 +25,14 @@ app.MapPatch("/profile", Profile.Patch_UserData);
 app.MapDelete("/profile", Profile.DeleteUserData);
 // Login
 app.MapPost("/login", Login.Post);
+// Logout
+app.MapDelete("/logout", Login.Delete_Logout);
 // forgot password
 app.MapPost("/requestPassword", Login.Post_RequestPassword);
 app.MapPost("/resetPassword", Login.Post_ResetPassword);
 //create user
 app.MapPost("/createuser", CreateUser.Post);
+
 //booking
 app.MapPost("/booking", BookingRequest.CreateBooking);
 //package booking from pre-made packagedetails

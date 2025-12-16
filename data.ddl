@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS holidaymakerab (
 
 CREATE TABLE IF NOT EXISTS user (
     userid INT PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(254) NOT NULL,
+    email VARCHAR(100) NULL UNIQUE,
     `password` VARCHAR(255) NOT NULL,
     firstname VARCHAR(100) NOT NULL,
     lastname VARCHAR(100) NOT NULL,

@@ -53,7 +53,7 @@ static class Login
     public static async Task<string> Post_ResetPassword(Post_resetArgs reset, Config config)
     {
         MySqlParameter guid = new("@guid", reset.Guid);
-        var reader =  MySqlHelper.ExecuteReader(config.ConnectionString,
+        var reader = MySqlHelper.ExecuteReader(config.ConnectionString,
         "SELECT userid FROM user WHERE requestPass = @Guid", guid);
         if (!reader.Read()) return "Invalid link";
         var updatedRows = MySqlHelper.ExecuteNonQuery(config.ConnectionString, """
@@ -61,5 +61,14 @@ static class Login
             """, new MySqlParameter[] { new("@newPass", reset.NewPass), guid });
         if (updatedRows > 0) return "Password has been updated";
         return "Could not update password";
+    }
+
+    // logout
+    public static void Delete_Logout(HttpContext ctx)
+    {
+        if(ctx.Session.IsAvailable)
+        {
+            ctx.Session.Clear();
+        }
     }
 }
