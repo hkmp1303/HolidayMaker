@@ -200,9 +200,12 @@ static class PackageBooking
         return tplist;
     }
 
-    public record MyPackageList(int bookingid, int userid, string hotelname, string room, double roomprice, string activityname, double activityprice);
-    public static async Task<List<MyPackageList>> Mytplist(Config config, HttpContext ctx)
+    public record MyOldPackages(int bookingid, string hotelname, int hotelid, string room, int roomid, double roomprice, string activityname, int activityid, double activityprice);
+    public static async Task<List<MyOldPackages>> Mytplist(Config config, HttpContext ctx)
     {
+
+        var result = new List<MyOldPackages>();
+
         if (ctx.Session.IsAvailable)
         {
             if(ctx.Session.GetInt32("user_id") is int user_id)
@@ -211,15 +214,16 @@ static class PackageBooking
 
                 await con.OpenAsync();
 
-                using var transaction = con.BeginTransaction();
 
                 string mytpquary = """
                         SELECT b.bookingid as yourbooking,
-                        u.userid as usernamn,
                         h.name AS hotelname,
+                        h.hotelid AS hotelshowid,
                         r.roomtype as room,
+                        r.roomid AS roomshowid,
                         rp.price as roomprice,
                         a.name AS activityname,
+                        a.activityid AS activityshowid,
                         ap.price as activityprice
                         FROM booking AS b
                         join user as u on b.fk_user_id = u.userid
@@ -230,10 +234,34 @@ static class PackageBooking
                         JOIN activity AS a ON ba.fk_activity_id = a.activityid
                         join price as rp on r.fk_price_id = rp.priceid
                         join price as ap on a.fk_price_id = ap.priceid
+                        WHERE u.userid = @userid
                         ORDER BY b.bookingid DESC;          
                 """;
+
+                using var cmd = new MySqlCommand(mytpquary, con );
+                
+                    cmd.Parameters.AddWithValue("@userid", user_id);
+
+                    using var reader = cmd.ExecuteReader();
+
+                    while(await reader.ReadAsync())
+                    {
+                        result.Add(new MyOldPackages(
+                            reader.GetInt32("yourbooking"),
+                            reader.GetString("hotelname"),
+                            reader.GetInt32("hotelshowid"),
+                            reader.GetString("room"),
+                            reader.GetInt32("roomshowid"),
+                            reader.GetDouble("roomprice"),
+                            reader.GetString("activityname"),
+                            reader.GetInt32("activityshowid"),
+                            reader.GetDouble("activityprice"))
+                        );
+                    }
             }
+            
         }
+        return result;
     }
 
     /*SELECT b.bookingid as yourbooking,
@@ -252,7 +280,64 @@ JOIN hotel AS h ON r.fk_hotel_id = h.hotelid
 JOIN activity AS a ON ba.fk_activity_id = a.activityid
 join price as rp on r.fk_price_id = rp.priceid
 join price as ap on a.fk_price_id = ap.priceid
-ORDER BY b.bookingid DESC;*/
+ORDER BY b.bookingid DESC;
+
+
+    public record MyOldPackages(int bookingid, string hotelname, string room, double roomprice, string activityname, double activityprice);
+    public static async Task<List<MyOldPackages>> Mytplist(Config config, HttpContext ctx)
+    {
+
+        var result = new List<MyOldPackages>();
+
+        if (ctx.Session.IsAvailable)
+        {
+            if(ctx.Session.GetInt32("user_id") is int user_id)
+            {
+                using var con = new MySqlConnection(config.ConnectionString);
+
+                await con.OpenAsync();
+
+                string mytpquary = """
+                        SELECT b.bookingid as yourbooking,
+                        h.name AS hotelname,
+                        r.roomtype as room,
+                        rp.price as roomprice,
+                        a.name AS activityname,
+                        ap.price as activityprice
+                        FROM booking AS b
+                        join user as u on b.fk_user_id = u.userid
+                        JOIN bookinghotel AS bh ON b.bookingid = bh.fk_booking_id
+                        JOIN bookingactivity AS ba ON b.bookingid = ba.fk_booking_id
+                        JOIN room AS r ON bh.fk_room_id = r.roomid
+                        JOIN hotel AS h ON r.fk_hotel_id = h.hotelid
+                        JOIN activity AS a ON ba.fk_activity_id = a.activityid
+                        join price as rp on r.fk_price_id = rp.priceid
+                        join price as ap on a.fk_price_id = ap.priceid
+                        WHERE u.userid = @userid
+                        ORDER BY b.bookingid DESC;          
+                """;
+
+                using var cmd = new MySqlCommand(mytpquary, con );
+                cmd.Parameters.AddWithValue("@userid", user_id);
+
+                    using var reader = await cmd.ExecuteReaderAsync();
+
+                    while(await reader.ReadAsync())
+                    {
+                        result.Add(new MyOldPackages(
+                            reader.GetInt32("yourbooking"),
+                            reader.GetString("hotelname"),
+                            reader.GetString("room"),
+                            reader.GetDouble("roomprice"),
+                            reader.GetString("activityname"),
+                            reader.GetDouble("activityprice"))
+                        );
+                    }
+            }
+            
+        }
+        return result;
+    }*/
 
 
 }
