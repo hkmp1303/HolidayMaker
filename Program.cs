@@ -39,6 +39,8 @@ app.MapPost("/booking", BookingRequest.CreateBooking);
 app.MapPost("/package", PackageBooking.CreatePackageBooking);
 //Cancel a travel package
 app.MapPatch("/CancelTP", PackageBooking.CancelTPBooking);
+//Rebook a travel package
+app.MapPatch("/RebookTP", PackageBooking.RebookTPBooking);
 //see my old booked packages 
 app.MapGet("/myoldpackages", PackageBooking.Mytplist);
 

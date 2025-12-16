@@ -263,6 +263,28 @@ static class PackageBooking
         }
         return result;
     }
+        public record RebookTP(int BookingId, DateTime BookingDate, int UserId, int? TransportationId, string Status);
+        public static async Task<bool> RebookTPBooking(HttpContext ctx, Config config, int bookingId)
+        {
+        if (ctx.Session.IsAvailable && ctx.Session.GetInt32("user_id") is int user_id)
+        {
+            var sql = @"
+                INSERT INTO booking (fk_user_id, bookingdate, fk_transportation_id, status)
+                SELECT fk_user_id, NOW(), fk_transportation_id, 'Rebooked'
+                FROM booking
+                WHERE bookingid = @bookingId AND fk_user_id = @userId";
+
+            var parameters = new MySqlParameter[]
+            {
+                new MySqlParameter("@bookingId", bookingId),
+                new MySqlParameter("@userId", user_id)
+            };
+            var rowsAffected = await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, sql, parameters);
+            return rowsAffected > 0;
+        }
+        return false;
+    }
+}
 
     /*SELECT b.bookingid as yourbooking,
 u.userid as usernamn,
@@ -338,18 +360,6 @@ ORDER BY b.bookingid DESC;
         }
         return result;
     }*/
-
-
-}
-
-
-
-
-
-
-
-
-
 
 
 
