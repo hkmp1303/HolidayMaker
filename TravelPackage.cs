@@ -274,15 +274,15 @@ static class PackageBooking
                 FROM booking
                 WHERE bookingid = @bookingId AND fk_user_id = @userId";
 
-        var parameters = new MySqlParameter[]
-        {
-            new MySqlParameter("@bookingId", bookingId),
-            new MySqlParameter("@userId", user_id)
-        };
-        var rowsAffected = await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, sql, parameters);
-        return rowsAffected > 0;
-    }
-    return false;
+            var parameters = new MySqlParameter[]
+            {
+                new MySqlParameter("@bookingId", bookingId),
+                new MySqlParameter("@userId", user_id)
+            };
+            var rowsAffected = await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, sql, parameters);
+            return rowsAffected > 0;
+        }
+        return false;
     }
 }
 
