@@ -98,6 +98,7 @@ CREATE TABLE IF NOT EXISTS booking (
     bookingdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fk_user_id INT NOT NULL,
     fk_transportation_id INT,
+    status VARCHAR(50) NOT NULL DEFAULT 'Active',
     FOREIGN KEY (fk_user_id) REFERENCES user(userid),
     FOREIGN KEY (fk_transportation_id) REFERENCES transportation(transportationid)
 );
