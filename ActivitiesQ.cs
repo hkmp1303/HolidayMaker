@@ -8,6 +8,11 @@ public class ActivitiesQ
   public record ActivityFull(
       int Id, string Name, string Phonenumber, string Address, string City, decimal Price, string? Description, double Latitude, double Longitude
   );
+
+  public record ActivityRatingSummary(
+      int ActivityId, string ActivityName, double AverageRating, int TotalRatings
+  );
+
   public static async Task<List<ActivityFull>> GetActivitiesByCountry(string country, Config config)
   {
     var activities = new List<ActivityFull>();
@@ -157,5 +162,38 @@ public class ActivitiesQ
     }
 
     return null;
+  }
+
+  // Read rating for an activity by id
+  public static async Task<ActivityRatingSummary?> GetActivityRating(int id, Config config)
+  {
+    string sql = @"
+            SELECT
+              a.activityid,
+              a.name,
+              COALESCE(AVG(r.star_rating), 0) AS avg_rating,
+              COUNT(r.ratingid) AS rating_count
+            FROM activity a
+            LEFT JOIN rating r ON r.fk_activity_id = a.activityid
+            WHERE a.activityid = @id
+            GROUP BY a.activityid, a.name
+            LIMIT 1;
+            ";
+
+    var param = new MySqlParameter("@id", id);
+
+    using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql, param);
+
+    if (await reader.ReadAsync())
+    {
+      return new ActivityRatingSummary(
+          reader.GetInt32("activityid"),
+          reader.GetString("name"),
+          reader.IsDBNull(reader.GetOrdinal("avg_rating")) ? 0.0 : reader.GetDouble("avg_rating"),
+          reader.IsDBNull(reader.GetOrdinal("rating_count")) ? 0 : reader.GetInt32("rating_count")
+      );
+    }
+
+    return null; // activity not found
   }
 }
