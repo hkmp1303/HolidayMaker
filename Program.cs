@@ -41,7 +41,7 @@ app.MapPost("/package", PackageBooking.CreatePackageBooking);
 app.MapPatch("/CancelTP", PackageBooking.CancelTPBooking);
 //Rebook a travel package
 app.MapPatch("/RebookTP", PackageBooking.RebookTPBooking);
-//see my old booked packages 
+//see my old booked packages
 app.MapGet("/myoldpackages", PackageBooking.Mytplist);
 
 app.MapPost("/rooms/availability", HotelsQ.GetAvailableHotels);
@@ -52,13 +52,15 @@ app.MapGet("/tplist", PackageBooking.Tplist);
 
 //Reset and create the database
 app.MapDelete("/db", DbReset);
-app.MapGet("/Hotels", HotelsQ.GetHotels);
+app.MapGet("/hotels", HotelsQ.GetHotels);
 app.MapGet("/fhotel", HotelsQ.GetHotelsAdmin);
 app.MapGet("/hotel", HotelsQ.GetHotelsfull);
-app.MapGet("/HotelPrice", HotelsQ.GetHotelPrice);
+app.MapGet("/hotelPrice", HotelsQ.GetHotelPrice);
 app.MapGet("/activities/{country}", ActivitiesQ.GetActivitiesByCountry);
 app.MapGet("/activity/{id}", ActivitiesQ.GetActivityById);
-app.MapGet("/HotelAmenity", HotelsQ.GetHotelAmenities);
+app.MapGet("/hotelAmenity", HotelsQ.GetHotelAmenities);
+// ratings
+app.MapPut("/rating", Rating.Put_NewRating);
 
 app.Run();
 
