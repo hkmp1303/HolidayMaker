@@ -151,7 +151,7 @@ INSERT IGNORE INTO activity (activityid, name, phonenumber, address, city, fk_pr
 -- 10. RATING
 -- =========================================================
 INSERT IGNORE INTO rating (ratingid, star_rating, description, fk_user_id, fk_hotel_id, fk_activity_id) VALUES
-(1, 5, 'Fantastisk utsikt och bra service.',      1, 1, 1),   --ratings är fel gjort. pallar inte fixa det nu mvh mikael
+(1, 5, 'Fantastisk utsikt och bra service.',      1, 1, 1),
 (2, 4, 'Mycket trevligt hotell, bra frukost.',    2, 2, 3),
 (3, 3, 'Bra läge men lite små rum.',              3, 3, 2),
 (4, 5, 'Magisk kvällstur i Colosseum.',           1, 6, 5),
