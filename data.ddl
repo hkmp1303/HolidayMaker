@@ -85,12 +85,10 @@ CREATE TABLE IF NOT EXISTS rating (
     star_rating INT NOT NULL CHECK (star_rating BETWEEN 1 AND 5),
     `description` TEXT,
     date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    fk_user_id INT NOT NULL,
-    fk_hotel_id INT NOT NULL,
-    fk_activity_id INT NOT NULL,
-    FOREIGN KEY (fk_user_id) REFERENCES user(userid),
-    FOREIGN KEY (fk_hotel_id) REFERENCES hotel(hotelid),
-    FOREIGN KEY (fk_activity_id) REFERENCES activity(activityid)
+    rating_type enum('Hotel', 'Activity', 'Transportation', 'Package') NOT NULL,
+    fk_booking_id INT NOT NULL,
+    CONSTRAINT UC_type_booking UNIQUE (rating_type, fk_booking_id),
+    FOREIGN KEY (fk_booking_id) REFERENCES booking(bookingid)
 );
 
 CREATE TABLE IF NOT EXISTS booking (

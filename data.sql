@@ -150,13 +150,13 @@ INSERT IGNORE INTO activity (activityid, name, phonenumber, address, city, fk_pr
 -- =========================================================
 -- 10. RATING
 -- =========================================================
-INSERT IGNORE INTO rating (ratingid, star_rating, description, fk_user_id, fk_hotel_id, fk_activity_id) VALUES
-(1, 5, 'Fantastisk utsikt och bra service.',      1, 1, 1),
-(2, 4, 'Mycket trevligt hotell, bra frukost.',    2, 2, 3),
-(3, 3, 'Bra läge men lite små rum.',              3, 3, 2),
-(4, 5, 'Magisk kvällstur i Colosseum.',           1, 6, 5),
-(5, 4, 'Väldigt rolig Gaudí-tur.',                4, 5, 4),
-(6, 5, 'Fjordkryssningen var otrolig.',           2, 7, 6);
+INSERT IGNORE INTO rating (ratingid, star_rating, description, rating_type, fk_booking_id) VALUES
+(1, 5, 'Fantastisk utsikt och bra service.',      'Hotel', 1),
+(2, 4, 'Mycket trevligt hotell.',                 'Hotel', 3),
+(3, 3, 'Bra läge men lite små rum.',              'Hotel', 2),
+(4, 5, 'Magisk kvällstur i Colosseum.',           'Package', 5),
+(5, 4, 'Väldigt rolig Gaudí-tur.',                'Activity', 4),
+(6, 5, 'Fjordkryssningen var otrolig.',           'Package', 6);
 
 -- =========================================================
 -- 11. BOOKING

@@ -11,15 +11,26 @@ public record HotelResult(int Id, string Name, string City, string Description, 
 
 public class HotelsQ
 {
-    // Enkel modell med bara ID och namn
-    public record Hotelsimple(int Id, string Name );
-    // Hämtar en enkel lista på alla hotell 
-    public static async Task<List<Hotelsimple>> GetHotels(Config config)
+    // Enkel modell med bara ID, namn och rating
+    public record Hotelsimple(int Id, string Name, decimal? Stars);
+    // Hämtar en enkel lista på alla hotell
+    public static async Task<List<Hotelsimple>> GetHotels(Config config, HttpContext ctx)
     {
+        var qs = ctx.Request.Query;
+        bool sortbystars = bool.TryParse(qs["sortbystars"], out sortbystars);
         // Lista som vi fyller med hotell
         var hotels = new List<Hotelsimple>();
-        // SQL fråga Hämtar id och namn från hotel-tabellen
-        var sql = "SELECT hotelid, name FROM hotel"; 
+        string sort = (sortbystars ? "stars DESC, ": "") + "h.name ASC";
+        // SQL fråga Hämtar id namn och rating från hotel-tabellen
+        var sql = $"""
+            SELECT h.hotelid, h.name, ROUND(AVG(s.star_rating), 1) AS stars
+            FROM hotel AS h
+                INNER JOIN room AS r ON h.hotelid = r.fk_hotel_id
+                LEFT JOIN bookinghotel AS b ON r.roomid = b.fk_room_id
+                LEFT JOIN rating AS s USING(fk_booking_id)
+            GROUP BY h.hotelid
+            ORDER BY {sort}
+            """;
         // Kör SQL frågan mot databasen
         using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql);
         // Läser rad för rad
@@ -27,7 +38,8 @@ public class HotelsQ
         {
             hotels.Add(new Hotelsimple(
                 reader.GetInt32("hotelid"),
-                reader.GetString("name")    
+                reader.GetString("name"),
+                reader.IsDBNull(2)? null : reader.GetDecimal("stars")
             ));
         }
         return hotels;
@@ -39,7 +51,7 @@ public class HotelsQ
     public static async Task<List<HotelAdmin>> GetHotelsAdmin(Config config)
     {
         var hotels = new List<HotelAdmin>();
-        
+
         var sql = @"SELECT hotelid,
        name,
        description,
@@ -48,7 +60,7 @@ public class HotelsQ
        phonenumber,
        email,
        total_capacity,
-       ST_X(coordinates) AS x, ST_Y(coordinates) AS y FROM hotel"; 
+       ST_X(coordinates) AS x, ST_Y(coordinates) AS y FROM hotel";
 
         using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql);
 
@@ -70,7 +82,7 @@ public class HotelsQ
         return hotels;
     }
     //modell för att returnera hotell med pris
-public record PricedHotel(int Id, string Name, decimal Price);
+    public record PricedHotel(int Id, string Name, decimal Price);
 
     public static async Task<List<PricedHotel>> GetHotelPrice(Config config)
 
@@ -96,17 +108,17 @@ public record PricedHotel(int Id, string Name, decimal Price);
             ));
         }
         return hotels;
-        
+
     }
-     
+
     public record Hotelfull(int Id, string Name,  string Description, string Address,
         string City, string Phonenumber, string Email, int Totalcapacity, string CountryName);
     //hämta hotel och koppla till sitt land
     public static async Task<List<Hotelfull>> GetHotelsfull(Config config)
     {
         var hotels = new List<Hotelfull>();
-            
-        var sql = @"SELECT 
+
+        var sql = @"SELECT
                   hotel.hotelid,
                   hotel.name,
                   hotel.description,
@@ -117,7 +129,7 @@ public record PricedHotel(int Id, string Name, decimal Price);
                   hotel.total_capacity,
                   country.country FROM hotel
                   JOIN  bycountrysearch ON hotel.hotelid = bycountrysearch.fk_hotel_id
-                  JOIN country ON bycountrysearch.fk_country_id = country.countryid"; 
+                  JOIN country ON bycountrysearch.fk_country_id = country.countryid";
 
         using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql);
 
@@ -133,7 +145,7 @@ public record PricedHotel(int Id, string Name, decimal Price);
                 reader.GetString("email"),
                 reader.GetInt32("total_capacity"),
                 reader.GetString("country")
-                
+
             ));
         }
         return hotels;
@@ -182,18 +194,18 @@ public record PricedHotel(int Id, string Name, decimal Price);
 
 
         var sql = @"
-        SELECT 
-            h.hotelid, 
-            h.name, 
-            h.city, 
-            h.description, 
+        SELECT
+            h.hotelid,
+            h.name,
+            h.city,
+            h.description,
             COUNT(r.roomid) as available_count
         FROM hotel h
         JOIN room r ON h.hotelid = r.fk_hotel_id
         WHERE r.roomid NOT IN (
-            SELECT bh.fk_room_id 
+            SELECT bh.fk_room_id
             FROM bookinghotel bh
-            WHERE 
+            WHERE
                 (bh.date_start < @endDate AND bh.date_end > @startDate)
         )
         GROUP BY h.hotelid, h.name, h.city, h.description
@@ -221,7 +233,7 @@ public record PricedHotel(int Id, string Name, decimal Price);
 
         return availableHotels;
 
-    
+
     }
     public record Hotelname(string Name,  string Description, string Address,
         string City, string Phonenumber, string Email, int Totalcapacity);
@@ -244,10 +256,10 @@ public record PricedHotel(int Id, string Name, decimal Price);
 
         var parameters = new List<MySqlParameter>
         {
-                
+
             new MySqlParameter("@name", "%"+ request.Name + "%")
         };
-      
+
 
         using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql, parameters.ToArray());
 
