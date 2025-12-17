@@ -9,12 +9,8 @@ public class ActivitiesQ
       int Id, string Name, string Phonenumber, string Address, string City, decimal Price, string? Description, double Latitude, double Longitude
   );
 
-  // ✅ NEW: rating summary for one activity
   public record ActivityRatingSummary(
-      int ActivityId,
-      string ActivityName,
-      double AverageRating,
-      int TotalRatings
+      int ActivityId, string ActivityName, double AverageRating, int TotalRatings
   );
 
   public static async Task<List<ActivityFull>> GetActivitiesByCountry(string country, Config config)
