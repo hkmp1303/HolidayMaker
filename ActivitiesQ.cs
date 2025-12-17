@@ -1,92 +1,96 @@
-using System.Net.Mime;
 using MySql.Data.MySqlClient;
 namespace server;
 
 public class ActivitiesQ
 {
-  // Enkel modell för aktivitet
   public record ActivitySimple(int Id, string Name);
 
-  //Detaljerad modell för aktivitet
   public record ActivityFull(
-    int Id, string Name, string Phonenumber, string Address, string City, decimal Price, string? Description, double Latitude, double Longitude
+      int Id, string Name, string Phonenumber, string Address, string City, decimal Price, string? Description, double Latitude, double Longitude
   );
-
-  // Hämtar alla aktiviteter kopplade till ett visst land (resmål)
-  // countryName = t.ex. "Sweden", "Spain", "Italy"
   public static async Task<List<ActivityFull>> GetActivitiesByCountry(string country, Config config)
   {
-    // Lista som vi fyller med aktiviteter från databasen
     var activities = new List<ActivityFull>();
 
-    // SQL fråga:
-    // hämtar information från activity
-    // kopplar ihop via bycountrysearch
-    // filtrerar på landet i tabellen country
     string sql = @"
-            SELECT 
-                a.activityid,
-                a.name,
-                a.phonenumber,
-                a.address,
-                a.city,
-                p.price AS price,
-                a.description,
-                ST_X(a.coordinates) AS x,
-                ST_Y(a.coordinates) AS y
+            SELECT
+              a.activityid,
+              a.name,
+              a.phonenumber,
+              a.address,
+              a.city,
+              COALESCE(p.price, 0) AS price,
+              a.description,
+              ST_X(a.coordinates) AS x,
+              ST_Y(a.coordinates) AS y
             FROM activity a
-            JOIN bycountrysearch bcs ON a.activityid = bcs.fk_activity_id
-            JOIN country c ON bcs.fk_country_id = c.countryid
-            JOIN price p ON a.fk_price_id = p.priceid
-            WHERE c.country = @country
-        ";
+            LEFT JOIN price p ON p.priceid = a.fk_price_id
+            WHERE EXISTS (
+              SELECT 1
+              FROM bycountrysearch b
+              JOIN country c ON c.countryid = b.fk_country_id
+              WHERE LOWER(c.country) = LOWER(@country)
+                AND b.fk_activity_id = a.activityid
+            );
+            ";
 
-    // Parameter för att undvika SQL injection och skicka in landets namn
     var parameters = new MySqlParameter[]
     {
             new("@country", country)
     };
 
-    // Kör SQL frågan mot databasen och får tillbaka en datareader
     using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql, parameters);
 
-    // Läser rad för rad från resultatet
     while (await reader.ReadAsync())
     {
-      // Skapar ett ActivityFull-objekt från varje rad och lägger till i listan
+      int id = reader.GetInt32("activityid");
+      string name = reader.GetString("name");
+      string phone = reader.GetString("phonenumber");
+      string address = reader.GetString("address");
+      string city = reader.GetString("city");
+
+      decimal price = reader.IsDBNull(reader.GetOrdinal("price"))
+          ? 0m
+          : reader.GetDecimal("price");
+
+      string? description = reader.IsDBNull(reader.GetOrdinal("description"))
+          ? null
+          : reader.GetString("description");
+
+      double longitude = reader.IsDBNull(reader.GetOrdinal("x")) ? 0.0 : reader.GetDouble("x");
+      double latitude = reader.IsDBNull(reader.GetOrdinal("y")) ? 0.0 : reader.GetDouble("y");
+
       activities.Add(new ActivityFull(
-          reader.GetInt32("activityid"),
-          reader.GetString("name"),
-          reader.GetString("phonenumber"),
-          reader.GetString("address"),
-          reader.GetString("city"),
-          reader.GetDecimal("price"),
-          reader.IsDBNull(reader.GetOrdinal("description"))
-              ? null
-              : reader.GetString("description"),
-          reader.GetDouble("y"), // Latitude (ST_Y)
-          reader.GetDouble("x")  // Longitude (ST_X)
+          id,
+          name,
+          phone,
+          address,
+          city,
+          price,
+          description,
+          latitude,
+          longitude
       ));
     }
 
-    // Returnerar aktiviteter för landet
     return activities;
   }
 
-  // Hämtar bara id och namn för aktiviteter
+  // Read Bara id och name för ett land
   public static async Task<List<ActivitySimple>> GetSimpleActivitiesByCountry(string country, Config config)
   {
     var activities = new List<ActivitySimple>();
 
+    // För att undvika dubletter via bycountrysearch
     string sql = @"
             SELECT DISTINCT
-                a.activityid,
-                a.name
-            FROM activity a
-            JOIN bycountrysearch bcs ON a.activityid = bcs.fk_activity_id
-            JOIN country c ON bcs.fk_country_id = c.countryid
-            WHERE c.country = @country
-        ";
+              a.activityid,
+              a.name
+            FROM bycountrysearch b
+            JOIN country c ON c.countryid = b.fk_country_id
+            JOIN activity a ON a.activityid = b.fk_activity_id
+            WHERE LOWER(c.country) = LOWER(@country);
+            ";
 
     var parameters = new MySqlParameter[]
     {
@@ -106,54 +110,52 @@ public class ActivitiesQ
     return activities;
   }
 
-  // Hämtar info om en specifik aktivitet baserad på aktivitetens ID
+  // Read en aktivitet by id
   public static async Task<ActivityFull?> GetActivityById(int id, Config config)
   {
     string sql = @"
-      SELECT 
-          a.activityid,
-          a.name,
-          a.phonenumber,
-          a.address,
-          a.city,
-          p.price AS price,
-          a.description,
-          ST_X(a.coordinates) AS x,
-          ST_Y(a.coordinates) AS y
-      FROM activity a
-      JOIN price p ON a.fk_price_id = p.priceid
-      WHERE a.activityid = @id
-      LIMIT 1;
-  ";
+            SELECT 
+              a.activityid,
+              a.name,
+              a.phonenumber,
+              a.address,
+              a.city,
+              COALESCE(p.price, 0) AS price,
+              a.description,
+              ST_X(a.coordinates) AS x,
+              ST_Y(a.coordinates) AS y
+            FROM activity a
+            LEFT JOIN price p ON a.fk_price_id = p.priceid
+            WHERE a.activityid = @id
+            LIMIT 1;
+            ";
 
-    // Parameter för att undvika SQL injection
     var param = new MySqlParameter("@id", id);
 
-    // Kör frågan mot databasen
     using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql, param);
 
-    // När vi hittar en rad, bygger vi upp ett ActivityFull-objekt
     if (await reader.ReadAsync())
     {
+      string? description = reader.IsDBNull(reader.GetOrdinal("description"))
+          ? null
+          : reader.GetString("description");
+
+      double longitude = reader.IsDBNull(reader.GetOrdinal("x")) ? 0.0 : reader.GetDouble("x");
+      double latitude = reader.IsDBNull(reader.GetOrdinal("y")) ? 0.0 : reader.GetDouble("y");
+
       return new ActivityFull(
           reader.GetInt32("activityid"),
           reader.GetString("name"),
           reader.GetString("phonenumber"),
           reader.GetString("address"),
           reader.GetString("city"),
-          reader.GetDecimal("price"),
-          reader.IsDBNull(reader.GetOrdinal("description"))
-              ? null
-              : reader.GetString("description"),
-          reader.GetDouble("y"), 
-          reader.GetDouble("x")
+          reader.IsDBNull(reader.GetOrdinal("price")) ? 0m : reader.GetDecimal("price"),
+          description,
+          latitude,
+          longitude
       );
     }
 
-    // Om ingen aktivitet hittades
     return null;
   }
-
 }
-
-
