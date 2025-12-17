@@ -194,6 +194,6 @@ public class ActivitiesQ
       );
     }
 
-    return null; // activity not found
+    return null;
   }
 }
