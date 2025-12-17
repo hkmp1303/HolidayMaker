@@ -67,20 +67,3 @@ static class BookingRequest
         }
     }
 }
-
-/*
-postman query:
-
-{
-  "fk_transportation_id": 2,
-  "hotellist": [
-    {
-      "fk_room_id": 2,
-      "date_start": "2025-12-20",
-      "date_end": "2025-12-22"
-    }
-  ]
-}
-
-
-*/
