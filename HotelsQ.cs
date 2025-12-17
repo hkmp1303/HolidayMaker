@@ -1,26 +1,28 @@
 
 using MySql.Data.MySqlClient;
-using Microsoft.AspNetCore.Mvc;  // VIKTIGT: För [FromBody] och [FromServices]
+
 
 namespace server;
-
+// Request-modell för att ta emot sökparametrar för get available hotels
 public record DateSearchRequest(DateTime StartDate, DateTime EndDate, int MinRooms);
-    
+// Resultatmodell för sökning av tillgängliga hotell
 public record HotelResult(int Id, string Name, string City, string Description, int AvailableRooms);
 
 
 public class HotelsQ
 {
+    // Enkel modell med bara ID och namn
     public record Hotelsimple(int Id, string Name );
+    // Hämtar en enkel lista på alla hotell 
     public static async Task<List<Hotelsimple>> GetHotels(Config config)
     {
-        
+        // Lista som vi fyller med hotell
         var hotels = new List<Hotelsimple>();
-        
+        // SQL fråga Hämtar id och namn från hotel-tabellen
         var sql = "SELECT hotelid, name FROM hotel"; 
-
+        // Kör SQL frågan mot databasen
         using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql);
-
+        // Läser rad för rad
         while (await reader.ReadAsync())
         {
             hotels.Add(new Hotelsimple(
@@ -30,8 +32,10 @@ public class HotelsQ
         }
         return hotels;
     }
+    // Detaljerad modell för admin (inkluderar koordinater och full info)
     public record HotelAdmin(int Id, string Name,  string Description, string Address,
         string City, string Phonenumber, string Email, int Totalcapacity, double Latitude,  double Longitude);
+    // Hämtar all information om hotell, inklusive koordinater (x, y)
     public static async Task<List<HotelAdmin>> GetHotelsAdmin(Config config)
     {
         var hotels = new List<HotelAdmin>();
@@ -59,13 +63,13 @@ public class HotelsQ
                 reader.GetString("phonenumber"),
                 reader.GetString("email"),
                reader.GetInt32("total_capacity"),
-                reader.GetDouble("y"),
-                reader.GetDouble("x")
+                reader.GetDouble("y"), //Longtitude
+                reader.GetDouble("x") //Latitude
             ));
         }
         return hotels;
     }
-    
+    //modell för att returnera hotell med pris
 public record PricedHotel(int Id, string Name, decimal Price);
 
     public static async Task<List<PricedHotel>> GetHotelPrice(Config config)
@@ -94,8 +98,10 @@ public record PricedHotel(int Id, string Name, decimal Price);
         return hotels;
         
     }
+     
     public record Hotelfull(int Id, string Name,  string Description, string Address,
         string City, string Phonenumber, string Email, int Totalcapacity, string CountryName);
+    //hämta hotel och koppla till sitt land
     public static async Task<List<Hotelfull>> GetHotelsfull(Config config)
     {
         var hotels = new List<Hotelfull>();
@@ -135,7 +141,7 @@ public record PricedHotel(int Id, string Name, decimal Price);
 
 
     public record HotelAmenity(int HotelId, string HotelName, string Description, string Address, string City, string Amenity);
-
+     //hämta info för hotel med vilka amenities
     public static async Task<List<HotelAmenity>> GetHotelAmenities(Config config)
 {
     var hotels = new List<HotelAmenity>();
@@ -167,7 +173,7 @@ public record PricedHotel(int Id, string Name, decimal Price);
     }
     return hotels;
     }
-
+    // sökning hitta om det finns lediga rum till sökt hotell
     public static async Task<List<HotelResult>> GetAvailableHotels(
          DateSearchRequest request,
         Config config)

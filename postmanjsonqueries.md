@@ -31,4 +31,26 @@ postman query: boka ett hotel
   ]
 }
 
+*app.MapPost(""hotels/Name", HotelsQ.GetnameHotels")*
+postman query: söka hotel efter namn
+{
+  "Name": "ice"
+}
 
+*app.MapPost("/rooms/availability", HotelsQ.GetAvailableHotels);*
+
+postman query: see att et rum är bokad den här tiden
+
+{
+"startDate": "2026-06-11",
+"endDate": "2026-06-11",
+"minRooms": 1
+}
+
+postman query: vissa alla rum är inte bokade den här tiden
+
+{
+"startDate": "2027-02-12",
+"endDate": "2027-02-14",
+"minRooms": 1
+}
