@@ -108,13 +108,10 @@ public class ActivitiesQ
                 COALESCE(AVG(r.star_rating), 0) AS avg_rating,
                 COUNT(r.ratingid) AS rating_count
             FROM activity a
-            LEFT JOIN bookingactivity ba
-                ON ba.fk_activity_id = a.activityid
-            LEFT JOIN booking b
-                ON b.bookingid = ba.fk_booking_id
-            LEFT JOIN rating r
-                ON r.fk_booking_id = b.bookingid
-               AND r.rating_type = 'Activity'
+            LEFT JOIN bookingactivity ba ON ba.fk_activity_id = a.activityid
+            LEFT JOIN booking b ON b.bookingid = ba.fk_booking_id
+            LEFT JOIN rating r ON r.fk_booking_id = b.bookingid
+            AND r.rating_type = 'Activity'
             WHERE a.activityid = @id
             GROUP BY a.activityid, a.name
             LIMIT 1;
