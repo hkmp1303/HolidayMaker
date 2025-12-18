@@ -63,6 +63,7 @@ app.MapGet("/activities/{country}", ActivitiesQ.GetActivitiesByCountry);
 app.MapGet("/activity/{id}", ActivitiesQ.GetActivityById);
 // ratings
 app.MapPut("/rating", Rating.Put_NewRating);
+app.MapGet("/ratings/{type}/{id}", Rating.Get_Ratings);
 
 app.Run();
 
