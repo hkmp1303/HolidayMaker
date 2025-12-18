@@ -3,11 +3,37 @@ namespace server;
 
 public class ActivitiesQ
 {
-  public record ActivitySimple(int Id, string Name);
+  public record ActivitySimple(int Id, string Name, decimal? Stars = null);
 
   public record ActivityFull(
       int Id, string Name, string Phonenumber, string Address, string City, decimal Price, string? Description, double Latitude, double Longitude
   );
+
+    public static async Task<IEnumerable<ActivitySimple>> Get_Activities(Config config, HttpContext ctx)
+    {
+        var qs = ctx.Request.Query;
+        bool sortbystars = bool.TryParse(qs["sortbystars"], out sortbystars);
+        var activities = new List<ActivitySimple>();
+        string sort = (sortbystars ? "stars DESC, " : "") + "a.name ASC";
+        var sql = $"""
+                SELECT a.activityid, a.name, ROUND(AVG(s.star_rating), 1) AS stars
+                FROM activity AS a
+                    LEFT JOIN bookingactivity AS b ON a.activityid = b.fk_activity_id
+                    LEFT JOIN rating AS s USING(fk_booking_id)
+                GROUP BY a.activityid
+                ORDER BY {sort}
+                """;
+        using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, sql);
+        while (await reader.ReadAsync())
+        {
+            activities.Add(new ActivitySimple(
+                reader.GetInt32("activityid"),
+                reader.GetString("name"),
+                reader.IsDBNull(2) ? null : reader.GetDecimal("stars")
+            ));
+        }
+        return activities;
+    }
   public static async Task<List<ActivityFull>> GetActivitiesByCountry(string country, Config config)
   {
     var activities = new List<ActivityFull>();
@@ -114,7 +140,7 @@ public class ActivitiesQ
   public static async Task<ActivityFull?> GetActivityById(int id, Config config)
   {
     string sql = @"
-            SELECT 
+            SELECT
               a.activityid,
               a.name,
               a.phonenumber,

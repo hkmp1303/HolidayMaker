@@ -37,12 +37,51 @@ static class Rating
                 new("@fk_booking_id", rating.bookingID)
             }
         );
-        if(created > 0)
+        if (created > 0)
         {
             ctx.Response.StatusCode = 201;
             return true;
         }
         return false;
     }
+    // Sort by rating
+    public record RatingData(int Id, string Description, decimal Stars);
+    public static async Task<IEnumerable<RatingData>?> Get_Ratings(string type, int id, Config config, HttpContext ctx)
+    {
+        type = type.ToLower();
+        if (!(new string[]{"transportation", "activity", "hotel"/*, "package"*/}).Contains(type))
+        {
+            ctx.Response.StatusCode = 404;
+            return null;
+        }
+        string sql = $"""
+            SELECT ratingid, description, star_rating
+            FROM rating AS r
+                LEFT JOIN booking AS t ON rating_type = 'transportation'
+                    AND t.bookingid = r.fk_booking_id
+                LEFT JOIN bookingactivity AS a ON rating_type = 'activity'
+                    AND a.fk_booking_id = r.fk_booking_id
+                LEFT JOIN bookinghotel AS hl ON rating_type = 'hotel'
+                    AND hl.fk_booking_id = r.fk_booking_id
+                LEFT JOIN room AS h ON hl.fk_room_id = h.roomid
+            WHERE {type[0]}.fk_{type}_id = @id AND rating_type = @type
+                AND DATE_ADD(date_created, INTERVAL 2 YEAR) > NOW()
+            ORDER BY date_created DESC
+            LIMIT 100
+        """;
+        var r = MySqlHelper.ExecuteReader(config.ConnectionString, sql,
+            new MySqlParameter[] { new("@id", id), new("@type", type)});
+        List<RatingData> ratings = new();
+        while (r.Read())
+        {
+            ratings.Add(new(
+                r.GetInt32("ratingid"),
+                r.GetString("description"),
+                r.GetDecimal("star_rating")
+            ));
+        }
+        return ratings;
+    }
+
 }
 
