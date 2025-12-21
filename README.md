@@ -50,7 +50,7 @@ A simple backend travel API written in C# using ASP.NET Core running on .NET 10 
 - [ ] Seat reservation for limited places such as excursions
 - [ ] Detailed cost invoice
 
-## :rocket How to Run
+## 🚀 How to Run
 
 ```
 git clone git@github.com:hkmp1303/HolidayMaker.git
