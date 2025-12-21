@@ -104,7 +104,7 @@ static class PackageBooking
                     """;
 
                     using var cmd = new MySqlCommand(bookinghotelquary, con, transaction);
-                
+
                     cmd.Parameters.AddWithValue("@fkbookingid", booking_id);
                     cmd.Parameters.AddWithValue("@fkroomid", hotel.fk_room_id);
                     cmd.Parameters.AddWithValue("@date_start", hotel.date_start);
@@ -145,8 +145,8 @@ static class PackageBooking
     {
         var sql = @"
             UPDATE booking
-            SET status = 'Cancelled'
-            WHERE bookingid = @bookingId AND fk_user_id = @userId"; 
+            SET status = 'Canceled'
+            WHERE bookingid = @bookingId AND fk_user_id = @userId";
 
         var parameters = new MySqlParameter[]
         {
