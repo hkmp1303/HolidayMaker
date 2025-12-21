@@ -43,30 +43,33 @@ app.MapPatch("/CancelTP", PackageBooking.CancelTPBooking);
 app.MapPatch("/RebookTP", PackageBooking.RebookTPBooking);
 //see my old booked packages
 app.MapGet("/myoldpackages", PackageBooking.Mytplist);
-
-app.MapPost("/rooms/availability", HotelsQ.GetAvailableHotels);
-app.MapPost("hotels/Name", HotelsQ.GetnameHotels);
-
-//ReadAllText
+// booking package list
 app.MapGet("/tplist", PackageBooking.Tplist);
 
-//Reset and create the database
-app.MapDelete("/db", DbReset);
+// hotel
+app.MapPost("/rooms/availability", HotelsQ.GetAvailableHotels);
+app.MapPost("hotels/Name", HotelsQ.GetnameHotels);
 app.MapGet("/hotels", HotelsQ.GetHotels);
 app.MapGet("/fhotel", HotelsQ.GetHotelsAdmin);
 app.MapGet("/hotel", HotelsQ.GetHotelsfull);
 app.MapGet("/hotelPrice", HotelsQ.GetHotelPrice);
+app.MapGet("/hotelAmenity", HotelsQ.GetHotelAmenities);
+
+// activities
 app.MapGet("/activities/{country}", ActivitiesQ.GetActivitiesByCountry);
 app.MapGet("/activity/{id}", ActivitiesQ.GetActivityById);
-app.MapGet("/hotelAmenity", HotelsQ.GetHotelAmenities);
+
 // ratings
 app.MapPut("/rating", Rating.Put_NewRating);
+
+//Reset and create the database
+app.MapDelete("/db", DbReset);
 
 app.Run();
 
 async Task DbReset(Config config) //create tables, also hard reset
 {
-    string dropSql ="""
+    string dropSql = """
     SET FOREIGN_KEY_CHECKS = 0;
     DROP TABLE IF EXISTS
         rating,
@@ -87,11 +90,20 @@ async Task DbReset(Config config) //create tables, also hard reset
         travelpackage,
         packagedetails;
     SET FOREIGN_KEY_CHECKS =1;
-    """; //string that hold the databse and fk
+    """;
 
-    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, dropSql); //connection
+    // drop tables
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, dropSql);
 
-    string holidaymakerdb = File.ReadAllText("data.ddl"); //create tables with fk connections
+    // loading database structure from file
+    string holidaymakerdb = File.ReadAllText("data.ddl");
 
-    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, holidaymakerdb); //creating the database
+    // creating the database
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, holidaymakerdb);
+
+    // loading mock data from file
+    holidaymakerdb = File.ReadAllText("data.sql");
+
+    // populate tables with mock data
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, holidaymakerdb);
 }
