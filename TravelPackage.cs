@@ -1,12 +1,6 @@
-using System.Reflection.Metadata;
 using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI.Common;
-using Org.BouncyCastle.Cms;
-using Org.BouncyCastle.Crypto.Engines;
+
 namespace server;
-
-
-
 
 static class PackageBooking
 {
