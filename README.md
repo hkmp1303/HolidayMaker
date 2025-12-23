@@ -71,10 +71,10 @@ Configure the database connection string in Program.cs before running the applic
 
 The initial database design was created early in the project. Structural issues were identified such as a lack of convergence between transportation, activity, hotel and package bookings as well as certain tables implementing specific features without required relationships to relevant tables. A revised, proposed EER diagram was created and reviewed by group members which improved entity relationships and normalization.
 
-Due to time constraints, the proposed changes were not fully implemnted before delivery. The design improvments were discussed with the team on Tuesday December 16th. The proposed diagram is available in `docs/agile/diagrams/proposed_diagram` along with diagram versions 1 and 2.
+Due to time constraints, the proposed changes were not fully implemnted before delivery. The design improvments were discussed with the team on Tuesday December 16th. The proposed diagram is available in [docs/agile/diagrams/proposed_diagram](docs/agile/diagrams/proposed_diagram.png) along with diagram versions 1 and 2.
 
 ### Database Setup
-While in MySQLWorkbench, open the data.ddl from the project folder. If it is not visible, select "View all file types". Run the SQL scripts in data.ddl to create the database, the user and tables. Then the SQL scripts in the data.sql file to populate the tables with mock data. The data can also be populated through Postman by reseting the database through delete /db once the API is running.
+While in MySQLWorkbench, open the setup.sql, data.ddl and data.sql files from the project folder. Select "View all file types" to ensure the data.ddl file is visible. Run the SQL scripts in the aforementioned order: [setup.sql](setup.sql), [data.ddl](data.ddl), [data.sql](data.sql). The setup.sql file creates the database and user while the tables are created by the data.ddl file. Finally, run the SQL queries in the data.sql file to populate the tables with mock data. The data can also be populated through Postman by reseting the database through `delete /db` once the API is running.
 
 ## API Overview
 
@@ -85,54 +85,167 @@ The API will be available via HTTP protocal at `http://localhost:5143` after run
 Only representative endpoints are listed. Internal utility endpoints are omitted for clarity.
 A Postman collection for this project can be found at this [link](https://heather-p-4407471.postman.co/workspace/heather-p's-Workspace~1044ea2e-896e-41da-83f4-6e11bd4ffb6c/collection/50645716-e710b040-056e-417b-8351-df3e268012e1?action=share&creator=50645716).
 
-**Authentication**
-|Method|Endpoint|Description|
-|------|--------|------------|
-GET| / | Server check
-POST| /login | Authenticate user, start session
-DELETE | /logout | End user session
-POST | /createuser | Create new user account
-GET | /profile | Retrieve logged-in user profile
-PATCH | /profile | Update logged-in user profile
-DELETE | /profile | Delete user profile (admin)
-POST | /requestPassword | Request password rest
-POST | /resetPassword | Reset password
+### **Administrative / Internal**
+|Method|Endpoint|Description| Notes |
+|------|--------|------------|----|
+GET| / | Server check | Returns "The server is running" |
+DELETE | /db | Reset and recreate the database| development
 
-**Travel Packages & Booking**
-|Method|Endpoint|Description|
-|------|--------|------------|
-POST| /booking | Create a custom travel booking
-POST| /package | Book a predefined travel package
-PATCH | /CancelTP | Cancel a travel package booking
-PATCH | /RebookTP | Rebook a canceled travel package
-GET | /myoldpackages | View previously booked travel packages
-GET | /tplist | List available travel packages
 
-**Accommodations & Availability**
-|Method|Endpoint|Description|
-|------|--------|------------|
-POST| /rooms/availability | Search for available hotel rooms
-GET| /hotels | List hotels (concies details)
-GET | /hotel | Get detailed hotel information
-GET | /hotelAmenity | List available hotel amenities
-GET | /hotelPrice| Retrieve hotel pricing information
+### **Authentication & Profile**
+|Method|Endpoint|Description| Notes |
+|------|--------|------------|------|
+POST| /login | Authenticate user, start session| see Authentication details for request body |
+DELETE | /logout | End user session |  |
+POST | /createuser | Create new user account | see Authentication details |
+GET | /profile | Retrieve logged-in user profile |  |
+PATCH | /profile | Update logged-in user profile | see Authentication details |
+DELETE | /profile | Delete user profile (admin) |  |
+POST | /requestPassword | Request forgotten password reset | see Authentication details |
+POST | /resetPassword | Reset forgotten password | see Authentication details |
 
-**Activities**
-|Method|Endpoint|Description|
-|------|--------|------------|
+<details><summary> Authentication Details</summary>
+
+Post    /login
+```json
+{
+    "Email": "peter.admin@example.com",
+    "Password": "hashed_pw_6"
+}
+```
+POST    /createuser
+```json
+{
+    "Email": "kat_tastic@meowdy.com",
+    "Password": "pass321",
+    "Firstname": "Joy",
+    "Lastname": "Full",
+    "Phonenumber": "079 993 32 23",
+    "Address": "Beowolfvägen 47, 217 54 Epic"
+}
+```
+PATCH    /profile
+```json
+{
+    "email": "hello@example.com",
+    "firstname": "Peter",
+    "lastname": "Berg",
+    "phonenumber": "+46-70-6666666",
+    "address": "Vasagatan 15, 111 20 Malmö",
+    "shareInfoConsent": true,
+    "requestInfoDelete": false
+    "currentPass": "hashed_pw_6", 
+    "newPass": "pass6",
+}
+```
+POST    /requestPassword
+```json
+{
+    "Email": "hello@example.com"
+}
+```
+POST    /resetPassword
+
+See database to retrieve GUID from the user's "email"
+```json
+{
+    "newPass": "pass321",
+    "guid": "83275044-580b-4372-982b-62e861acaacc"
+}
+```
+
+</details>
+
+
+### **Travel Packages & Booking**
+|Method|Endpoint|Description|Notes|
+|------|--------|------------|--------|
+POST| /booking | Create a custom travel booking | See Travel Details for request body|
+POST| /package | Book a predefined travel package | See Travel Details|
+PATCH | /CancelTP | Cancel a travel package booking | Required query string `?bookingid=5` |
+PATCH | /RebookTP | Rebook a canceled travel package | Required query string `?bookingid=5`|
+GET | /myoldpackages | View previously booked travel packages | |
+GET | /tplist | List available travel packages | |
+
+<details><summary> Travel Details</summary>
+
+Post    /booking
+```json
+{ 
+    "travelpackageid": 2,
+    "hotellist": [ 
+        { 
+            "fk_room_id": 2, "date_start": "2025-07-01", "date_end": "2025-07-05" 
+        } 
+    ] 
+}
+```
+Post    /package
+```json
+{ 
+    "travelpackageid": 1,
+    "start": "2025-07-01",
+    "end": "2025-07-10",
+    "hotellist": [ { "fk_room_id": 1, "date_start": "2025-07-01", "date_end": "2025-07-05" } ]
+}
+```
+Patch    /CancelTP
+
+    Query string parameter: `http://localhost:5143/CancelTP?bookingid=5` 
+
+Patch    /RebookTP
+
+    Query string parameter: `http://localhost:5143/RebookTP?bookingid=5`
+    Known issue: method calls for an invalid enum value "Rebooked"
+
+</details>
+
+### **Accommodations & Availability**
+|Method|Endpoint|Description| Notes |
+|------|--------|------------|----|
+POST| /rooms/availability | Search for available hotel rooms| See Accommodations Details for request body |
+GET| /hotels | List hotels (concies details)|
+GET | /hotel | Get detailed hotel information with country |
+GET | /fhotel | Get detailed hotel information with position|
+GET | /hotelAmenity | List available hotel amenities|
+GET | /hotelPrice| Retrieve hotel pricing information|
+
+<details><summary>Accommodations Details </summary>
+
+POST  /rooms/availability
+```json
+{
+    "StartDate": "2025-12-11T12:00:00",
+    "EndDate": "2025-11-11T12:00:00",
+    "MinRooms": 2
+}
+```
+</details>
+
+### **Activities**
+|Method|Endpoint|Description| Notes|
+|------|--------|------------|-----|
 GET| /activities/{country} | List activities by country
 GET| /activity{id} | Retrieve activity details
 
-**Ratings**
-|Method|Endpoint|Description|
-|------|--------|------------|
-PUT| /rating | Submit a rating for a booked accommodation, transport, activity or package
 
-**Administrative / Internal**
-|Method|Endpoint|Description|
-|------|--------|------------|
-DELETE | /db | Reset and recreate teh database (development)
+### **Ratings** 
+|Method|Endpoint|Description| Notes|
+|------|--------|------------|----|
+PUT| /rating | Submit an accommodation, transport, activity or package rating| See Rating Details for request body | |
 
+<details><summary>Ratings Details </summary>
+
+PUT  /rating
+```json
+{
+    "starRating": 3,
+    "description": "Fast and maybe furious",
+    "ratingType": "Transportation",
+    "bookingID": 2
+}
+```
+</details>
 
 ## Authentication
 
@@ -144,7 +257,7 @@ This project is intended for educational purposes. Error handling and security a
 
 ## Development Process
 
-The project was developed using an Agile approach. Group members first developed  users stories which were prioritized from an product owners perspective by our instructor. Requirements were then defined as a backlog and implemented iteratively. Core function was prioritized while additional features were planned but not fully implemented within the project timeframe. Task tracking was managed using Projects via Github.
+The project was developed using an Agile approach. Group members first developed users stories which were prioritized from a product owner's perspective by our instructor. Requirements were then defined as a backlog and implemented iteratively. Core function was prioritized while additional features were planned but not fully implemented within the project timeframe. Task tracking was managed using Projects via Github. The Kanban board can be accessed [here](https://github.com/users/hkmp1303/projects/4/views/1).
 
 ## Agile Artifacts
 
@@ -153,7 +266,7 @@ As part of the Agile development process, the project includes the following art
 - Gherkin scenarios describing acceptance criteria
 - Wireframe illustrating the planned user interface
 
-These artifacts were developed in miro and are available in the `/docs/agile` directory. User stories are available in the Github Projects Kanban. The original miro board can be viewed [here](https://miro.com/app/live-embed/uXjVJka1AT0=/?embedMode=view_only_without_ui&moveToViewport=-914%2C-2408%2C12245%2C6335&embedId=653186413912).
+These artifacts were developed in miro and are available in the [docs/agile](docs/agile) directory. User stories are available in the Github Projects Kanban. The original miro board can be viewed [here](https://miro.com/app/live-embed/uXjVJka1AT0=/?embedMode=view_only_without_ui&moveToViewport=-914%2C-2408%2C12245%2C6335&embedId=653186413912).
 
 ## Authors
 This project was developed as a group asssignment.
